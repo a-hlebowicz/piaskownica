@@ -33,5 +33,27 @@ impl Grid {
         let i = self.index(x,y);
         self.cells[i] = particle;
     }
+    
+
+    //pixele
+    pub fn render(&mut self){
+        for y in 0..self.height{
+            for x in 0..self.width{
+                let i = self.index(x, y);
+                let particle =self.get(x, y);
+
+                let (r, g, b, a) = particle.cell_type.color();
+                let i4 =i*4; //tablica pikseli ma 4 pola na każdy pixel, wiec iterujemy co 4
+                self.pixels[i4]=r;
+                self.pixels[i4+1]=g;
+                self.pixels[i4+2]=b;
+                self.pixels[i4+3]=a;
+            }
+        }
+    }
+
+    pub fn pixels_ptr(&self) -> *const u8 {
+        self.pixels.as_ptr()
+    }
 }
 
