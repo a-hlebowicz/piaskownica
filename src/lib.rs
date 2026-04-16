@@ -1,14 +1,13 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+use wasm_bindgen::prelude::*;
+
+//wypisywanie do przeglądarki
+macro_rules! log {
+    ($($t:tt)*) => {
+        web_sys::console::log_1(&format!($($t)*).into())
+    };
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+#[wasm_bindgen]
+pub fn hello() {
+    log!("hello world");
 }
