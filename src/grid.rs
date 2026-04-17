@@ -1,6 +1,6 @@
 use std::vec;
 
-use crate::particle::{Particle, CellType};
+use crate::particle::{CellType, Particle};
 
 pub struct Grid {
     pub width: usize,
@@ -10,10 +10,10 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn new(width: usize, height: usize) -> Grid{
+    pub fn new(width: usize, height: usize) -> Grid {
         let total = width * height;
         let cells = vec![Particle::new_empty(); total];
-        let pixels = vec![0u8; total*4]; //RGBA
+        let pixels = vec![0u8; total * 4]; //RGBA
         Grid {
             width,
             height,
@@ -21,33 +21,42 @@ impl Grid {
             pixels,
         }
     }
-    pub fn index(&self, x:usize, y:usize) -> usize{
+    pub fn index(&self, x: usize, y: usize) -> usize {
         y * self.width + x
     }
 
-    pub fn get(&self, x:usize, y:usize) -> Particle{
-        self.cells[self.index(x,y)]
+    pub fn get(&self, x: usize, y: usize) -> Particle {
+        self.cells[self.index(x, y)]
     }
 
-    pub fn set(&mut self, x:usize, y :usize, particle: Particle){
-        let i = self.index(x,y);
+    pub fn set(&mut self, x: usize, y: usize, particle: Particle) {
+        let i = self.index(x, y);
         self.cells[i] = particle;
     }
-    
+
+    pub fn clear(&mut self) {
+        for cell in self.cells.iter_mut() {
+            *cell = Particle::new_empty();
+        }
+    }
+
+    pub fn in_bounds(&self,x:usize, y:usize) -> bool{
+        x < self.width && y < self.height
+    }
 
     //pixele
-    pub fn render(&mut self){
-        for y in 0..self.height{
-            for x in 0..self.width{
+    pub fn render(&mut self) {
+        for y in 0..self.height {
+            for x in 0..self.width {
                 let i = self.index(x, y);
-                let particle =self.get(x, y);
+                let particle = self.get(x, y);
 
                 let (r, g, b, a) = particle.cell_type.color();
-                let i4 =i*4; //tablica pikseli ma 4 pola na każdy pixel, wiec iterujemy co 4
-                self.pixels[i4]=r;
-                self.pixels[i4+1]=g;
-                self.pixels[i4+2]=b;
-                self.pixels[i4+3]=a;
+                let i4 = i * 4; //tablica pikseli ma 4 pola na każdy pixel, wiec iterujemy co 4
+                self.pixels[i4] = r;
+                self.pixels[i4 + 1] = g;
+                self.pixels[i4 + 2] = b;
+                self.pixels[i4 + 3] = a;
             }
         }
     }
@@ -56,4 +65,3 @@ impl Grid {
         self.pixels.as_ptr()
     }
 }
-

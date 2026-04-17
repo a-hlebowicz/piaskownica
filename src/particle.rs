@@ -1,15 +1,13 @@
-use std::cell::Cell;
-
 #[derive(Clone, Copy, PartialEq)]
 pub enum CellType {
     Empty,
     Sand,
 }
 impl CellType {
-    pub fn color(&self) -> (u8,u8,u8,u8) {
+    pub fn color(&self) -> (u8, u8, u8, u8) {
         match self {
-            CellType::Empty => (1,1,1,1),
-            CellType::Sand => (2,2,2,2), 
+            CellType::Empty => (40, 40, 40, 255),
+            CellType::Sand => (255, 228, 0, 255),
         }
     }
 }
@@ -30,7 +28,4 @@ impl Particle {
             cell_type: CellType::Sand,
         }
     }
-    
 }
-
-//dodac Clone, Copy i PartialEq
