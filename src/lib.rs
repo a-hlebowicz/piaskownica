@@ -1,5 +1,6 @@
 use wasm_bindgen::prelude::*;
-
+mod particle;
+mod grid;
 //wypisywanie do przeglądarki
 macro_rules! log {
     ($($t:tt)*) => {
