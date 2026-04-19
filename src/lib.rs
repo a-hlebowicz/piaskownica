@@ -32,6 +32,7 @@ impl Universe {
     }
 
     pub fn tick(&mut self) {
+        self.grid.resed_moved_flags();
         self.grid.render();
     }
 

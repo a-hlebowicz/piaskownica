@@ -34,9 +34,21 @@ impl Grid {
         self.cells[i] = particle;
     }
 
+    pub fn swap(&mut self, x1:usize, y1:usize, x2:usize, y2:usize){
+        let tmp = self.get(1, y1);
+        self.set(x1, y1, self.get(2, y2));
+        self.set(x2, y2, tmp);
+    }
+
     pub fn clear(&mut self) {
         for cell in self.cells.iter_mut() {
             *cell = Particle::new_empty();
+        }
+    }
+
+    pub fn resed_moved_flags(&mut self){
+        for cell in self.cells.iter_mut() {
+            cell.has_moved=false;
         }
     }
 

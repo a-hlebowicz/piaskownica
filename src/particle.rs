@@ -15,17 +15,23 @@ impl CellType {
 #[derive(Clone, Copy)]
 pub struct Particle {
     pub cell_type: CellType,
+    pub has_moved: bool,
+    pub temperature: i16,
 }
 
 impl Particle {
     pub fn new_empty() -> Particle {
         Particle {
             cell_type: CellType::Empty,
+            has_moved: false,
+            temperature: 20,
         }
     }
     pub fn new_sand() -> Particle {
         Particle {
             cell_type: CellType::Sand,
+            has_moved: false,
+            temperature: 20,
         }
     }
 }
