@@ -17,17 +17,26 @@ async function run() {
     ctx.imageSmoothingEnabled = false;
 
     let mouseDown = false;
+    let lastX = -1;
+    let lastY = -1;
 
-    canvas.addEventListener('mousedown', () => {
+    canvas.addEventListener('mousedown', (event) => {
         mouseDown = true;
+        lastX = Math.floor(event.offsetX / scale);
+        lastY = Math.floor(event.offsetY / scale);
+        universe.draw(lastX, lastY, 1);
     });
 
     canvas.addEventListener('mouseup', () => {
         mouseDown = false;
+        lastX = -1;
+        lastY = -1;
     });
 
     canvas.addEventListener('mouseleave', () => {
         mouseDown = false;
+        lastX = -1;
+        lastY = -1;
     });
 
     canvas.addEventListener('mousemove', (event) => {
@@ -37,7 +46,9 @@ async function run() {
         const x = Math.floor(event.offsetX / scale);
         const y = Math.floor(event.offsetY / scale);
 
-        universe.draw(x, y, 1);  // 1 = piasek
+        universe.draw_line(lastX, lastY, x, y, 1);
+        lastX = x;
+        lastY = y;
     });
 
     //rysowanie też przy jednym kliknięciu (bez ruchu)
