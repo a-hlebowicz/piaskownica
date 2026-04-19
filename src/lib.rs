@@ -37,16 +37,15 @@ impl Universe {
 
     pub fn draw(&mut self, x: usize, y: usize, material: u8){
         if self.grid.in_bounds(x,y){
-                let particle= match material {
-                1=> Particle::new_sand(),
-                _=> Particle::new_empty(),
-            };
+            let particle = material_to_particle(material);
             self.grid.set(x, y, particle);
         }
-        else {
-            log!("wartosc poza zakresem?")
-        }
-        
+        else {log!("wartosc poza zakresem?");}
+    }
+    
+    pub fn draw_line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, material: u8) {
+        let particle = material_to_particle(material);
+        self.grid.draw_line(x1, y1, x2, y2, particle);
     }
 
     pub fn clear(&mut self){
@@ -64,4 +63,10 @@ impl Universe {
         self.grid.pixels_ptr()
     }
 
+}
+fn material_to_particle(material: u8) -> Particle {
+    match material {
+        1 => Particle::new_sand(),
+        _ => Particle::new_empty(),
+    }
 }
