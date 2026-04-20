@@ -23,9 +23,11 @@ fn update_sand(grid: &mut Grid, x: usize, y: usize) {
     }
 
     // TODO: losowanie kolejności lewo/prawo
+    let strona: bool = fastrand::bool();
+
 
     // ukos lewo
-    if x > 0 && grid.get(x - 1, y + 1).cell_type == CellType::Empty {
+    if strona && x > 0 && grid.get(x - 1, y + 1).cell_type == CellType::Empty {
         grid.swap(x, y, x - 1, y + 1);
         return;
     }
