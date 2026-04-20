@@ -1,8 +1,10 @@
 mod grid;
 mod particle;
+mod physics;
 
 use crate::grid::Grid;
 use crate::particle::{CellType, Particle};
+use crate::physics::tick;
 use wasm_bindgen::prelude::*;
 
 //wypisywanie do przeglądarki
@@ -33,6 +35,7 @@ impl Universe {
 
     pub fn tick(&mut self) {
         self.grid.resed_moved_flags();
+        physics::tick(&mut self.grid);
         self.grid.render();
     }
 

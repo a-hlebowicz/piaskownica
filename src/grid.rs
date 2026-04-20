@@ -34,10 +34,13 @@ impl Grid {
         self.cells[i] = particle;
     }
 
-    pub fn swap(&mut self, x1:usize, y1:usize, x2:usize, y2:usize){
-        let tmp = self.get(1, y1);
-        self.set(x1, y1, self.get(2, y2));
-        self.set(x2, y2, tmp);
+    pub fn swap(&mut self, x1: usize, y1: usize, x2: usize, y2: usize) {
+        let mut p1 = self.get(x1, y1);
+        let mut p2 = self.get(x2, y2);
+        p1.has_moved = true;
+        p2.has_moved = true;
+        self.set(x1, y1, p2);
+        self.set(x2, y2, p1);
     }
 
     pub fn clear(&mut self) {
@@ -46,13 +49,13 @@ impl Grid {
         }
     }
 
-    pub fn resed_moved_flags(&mut self){
+    pub fn resed_moved_flags(&mut self) {
         for cell in self.cells.iter_mut() {
-            cell.has_moved=false;
+            cell.has_moved = false;
         }
     }
 
-    pub fn in_bounds(&self,x:usize, y:usize) -> bool{
+    pub fn in_bounds(&self, x: usize, y: usize) -> bool {
         x < self.width && y < self.height
     }
 
@@ -85,7 +88,7 @@ impl Grid {
         let (dx, xi) = if x1 < x2 { (x2 - x1, 1) } else { (x1 - x2, -1) };
         let (dy, yi) = if y1 < y2 { (y2 - y1, 1) } else { (y1 - y2, -1) };
 
-    // pomocnicza funkcja do ustawienia piksela z bounds check
+        // pomocnicza funkcja do ustawienia piksela z bounds check
         let set_pixel = |grid: &mut Grid, x: i32, y: i32| {
             if x >= 0 && y >= 0 && (x as usize) < grid.width && (y as usize) < grid.height {
                 grid.set(x as usize, y as usize, particle);
