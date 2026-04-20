@@ -47,9 +47,6 @@ async function run() {
         lastY = Math.floor(event.offsetY / scale);
     });
 
-    //rysowanie też przy jednym kliknięciu (bez ruchu)
- 
-    //game loop
     function gameLoop() {
     if (mouseDown) {
         if (lastDrawX === -1) {

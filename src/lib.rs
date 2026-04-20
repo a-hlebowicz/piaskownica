@@ -71,6 +71,7 @@ impl Universe {
 fn material_to_particle(material: u8) -> Particle {
     match material {
         1 => Particle::new_sand(),
+        2 => Particle::new_water(),
         _ => Particle::new_empty(),
     }
 }
