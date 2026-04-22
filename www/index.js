@@ -10,6 +10,15 @@ async function run() {
 
     const universe = Universe.new(width, height);
 
+    let currentMaterial = 1; 
+    document.querySelectorAll('.material-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentMaterial = parseInt(btn.dataset.material);
+            document.querySelectorAll('.material-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+
     const canvas = document.getElementById('canvas');
     canvas.width = width * scale;
     canvas.height = height * scale;
@@ -50,9 +59,9 @@ async function run() {
     function gameLoop() {
     if (mouseDown) {
         if (lastDrawX === -1) {
-            universe.draw(lastX, lastY, 1);
+            universe.draw(lastX, lastY, currentMaterial);
         } else {
-            universe.draw_line(lastDrawX, lastDrawY, lastX, lastY, 1);
+            universe.draw_line(lastDrawX, lastDrawY, lastX, lastY, currentMaterial);
         }
         lastDrawX = lastX;
         lastDrawY = lastY;

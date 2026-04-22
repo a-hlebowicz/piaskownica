@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-    <meta charset="utf-8">
-    <title>Piaskownica</title>
-    <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <h1>Piaskownica</h1>
-    <canvas id="canvas"></canvas>
-    <p class="hint">Kliknij, żeby rysować</p>
-    <script type="module" src="index.js"></script>
-</body>
+    <head>
+        <meta charset="utf-8">
+        <title>Piaskownica</title>
+        <link rel="icon" href="data:,">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>Piaskownica</h1>
+
+        <div id="materials">
+            <button class="material-btn active" data-material="1">Piasek</button>
+            <button class="material-btn" data-material="2">Woda</button>
+            <button class="material-btn" data-material="0">Nic</button>
+        </div>
+
+        <canvas id="canvas"></canvas>
+        <p class="hint">Kliknij, żeby rysować</p>
+        <script type="module" src="index.js"></script>
+    </body>
 </html>

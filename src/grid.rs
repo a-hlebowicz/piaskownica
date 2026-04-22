@@ -58,7 +58,18 @@ impl Grid {
     pub fn in_bounds(&self, x: usize, y: usize) -> bool {
         x < self.width && y < self.height
     }
+    pub fn in_bounds_i32(&self, x: i32, y: i32) -> bool {
+        x >= 0 && y >= 0 && (x as usize) < self.width && (y as usize) < self.height
+    }
 
+    pub fn is_type_at(&self, x: usize, y: usize, dx: i32, dy: i32, cell_type: CellType) -> bool {
+        let tx = x as i32 + dx;
+        let ty = y as i32 + dy;
+        if !self.in_bounds_i32(tx, ty) {
+            return false;
+        }
+        self.get(tx as usize, ty as usize).cell_type == cell_type
+    }
     //pixele
     pub fn render(&mut self) {
         for y in 0..self.height {
