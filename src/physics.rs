@@ -20,30 +20,22 @@ fn update_sand(grid: &mut Grid, x: usize, y: usize) {
     if y + 1 >= grid.height {
         return;
     }
-
+    let passed_types = [CellType::Empty, CellType::Water];
     // dół
-    if try_move(grid, x, y, 0, 1) { return; }
+    //if try_move(grid, x, y, 0, 1) { return; }
     // czy pod jest woda
-    if try_swap(grid, x, y, 0, 1, CellType::Water) { return; }
+    if try_swap(grid, x, y, 0, 1, &passed_types) { return; }
 
     let mut candidates: Vec<(i32, i32)> = Vec::new();
 
     // ukos lewo
-    if can_move(grid, x, y, -1, 1) { candidates.push((-1, 1)); }
+    if can_swap(grid, x, y, -1, 1,&passed_types) { candidates.push((-1, 1)); }
 
     // ukos prawo
-    if can_move(grid,x,y,1,1) { candidates.push((1, 1)); }
+    if can_swap(grid, x, y, 1, 1,&passed_types) { candidates.push((1, 1)); }
 
-    /*
-    let candidate_count = candidates.len();
-    if candidate_count > 0 {
-        let idx = fastrand::usize(0..candidate_count);
-        let (dx, dy) = candidates[idx];
-        try_move(grid, x, y, dx, dy);
-    }
-     */
     if let Some(&(dx, dy)) = fastrand::choice(&candidates) {
-        try_move(grid, x, y, dx, dy);
+        try_swap(grid, x, y, dx, dy, &passed_types);
     }
 }
 
@@ -102,11 +94,14 @@ fn update_water(grid: &mut Grid,x: usize,y: usize){
 fn can_move(grid: &Grid, x: usize, y: usize, dx: i32, dy: i32) -> bool {
     grid.is_type_at(x, y, dx, dy, CellType::Empty)
 }
-fn can_swap(grid: &Grid, x: usize, y: usize, dx: i32, dy: i32, cell_type: CellType) -> bool {
-    grid.is_type_at(x, y, dx, dy, cell_type)
+fn can_swap(grid: &Grid, x: usize, y: usize, dx: i32, dy: i32, types: &[CellType]) -> bool {
+    for &t in types {
+        if grid.is_type_at(x, y, dx, dy, t) { return true; }
+    }
+    false
 }
-fn try_swap(grid: &mut Grid, x: usize, y: usize, dx: i32, dy: i32, cell_type: CellType) -> bool {
-    if grid.is_type_at(x, y, dx, dy, cell_type) {
+fn try_swap(grid: &mut Grid, x: usize, y: usize, dx: i32, dy: i32, types: &[CellType]) -> bool {
+    if can_swap(grid,x,y,dx,dy,types) {
         let dx = (x as i32 + dx) as usize;
         let dy = (y as i32 + dy) as usize;
         grid.swap(x, y, dx, dy);
@@ -117,5 +112,5 @@ fn try_swap(grid: &mut Grid, x: usize, y: usize, dx: i32, dy: i32, cell_type: Ce
 }
 
 fn try_move(grid: &mut Grid, x: usize, y: usize, dx: i32, dy: i32) -> bool {
-    try_swap(grid, x, y, dx, dy, CellType::Empty)
+    try_swap(grid, x, y, dx, dy, &[CellType::Empty])
 }
