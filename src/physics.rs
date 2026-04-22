@@ -17,78 +17,46 @@ pub fn tick(grid: &mut Grid) {
 }
 
 fn update_sand(grid: &mut Grid, x: usize, y: usize) {
-    if y + 1 >= grid.height {
-        return;
-    }
-    let passed_types = [CellType::Empty, CellType::Water];
-    // dół
-    //if try_move(grid, x, y, 0, 1) { return; }
-    // czy pod jest woda
-    if try_swap(grid, x, y, 0, 1, &passed_types) { return; }
+    if y + 1 >= grid.height { return; }
+
+    let lighter_than = [CellType::Empty, CellType::Water]; //nie wiem jak to ładniej nazwać
+    
+    if try_swap(grid, x, y, 0, 1, &lighter_than) { return; }
 
     let mut candidates: Vec<(i32, i32)> = Vec::new();
 
     // ukos lewo
-    if can_swap(grid, x, y, -1, 1,&passed_types) { candidates.push((-1, 1)); }
+    if can_swap(grid, x, y, -1, 1,&lighter_than) { candidates.push((-1, 1)); }
 
     // ukos prawo
-    if can_swap(grid, x, y, 1, 1,&passed_types) { candidates.push((1, 1)); }
+    if can_swap(grid, x, y, 1, 1,&lighter_than) { candidates.push((1, 1)); }
 
     if let Some(&(dx, dy)) = fastrand::choice(&candidates) {
-        try_swap(grid, x, y, dx, dy, &passed_types);
+        try_swap(grid, x, y, dx, dy, &lighter_than);
     }
 }
 
 fn update_water(grid: &mut Grid,x: usize,y: usize){
-    if y + 1 >= grid.height {
-        return;
-    }
+    if y + 1 >= grid.height { return; }
+    let lighter_than = [CellType::Empty];
     // dół
-    if grid.get(x, y + 1).cell_type == CellType::Empty {
-        grid.swap(x, y, x, y + 1);
-        return;
+    if try_swap(grid, x, y, 0, 1, &lighter_than) { return; }
+
+    let mut candidates: Vec<(i32, i32)> = Vec::new();
+    if can_swap(grid, x, y, -1, 0,&lighter_than) { candidates.push((-1, 0)); }
+    if can_swap(grid, x, y, 1, 0,&lighter_than) { candidates.push((1, 0)); }
+    if let Some(&(dx, dy)) = fastrand::choice(&candidates) {
+        try_swap(grid, x, y, dx, dy, &lighter_than);
     }
 
-    let strona: bool = fastrand::bool();
-
-
-     if x > 0 && grid.get(x - 1, y + 1).cell_type == CellType::Empty {
-        //zapisz do mozliwych ruchów
-
-     }
-
-
-
-
-
-
-
-
-
-
-
-    // ukos lewo
-    if strona && x > 0 && grid.get(x - 1, y + 1).cell_type == CellType::Empty {
-        grid.swap(x, y, x - 1, y + 1);
-        return;
+    let mut candidates: Vec<(i32, i32)> = Vec::new();
+    if can_swap(grid, x, y, -1, 1,&lighter_than) { candidates.push((-1, 1)); }
+    if can_swap(grid, x, y, 1, 1,&lighter_than) { candidates.push((1, 1)); }
+    if let Some(&(dx, dy)) = fastrand::choice(&candidates) {
+        try_swap(grid, x, y, dx, dy, &lighter_than);
     }
 
-    // ukos prawo
-    if x + 1 < grid.width && grid.get(x + 1, y + 1).cell_type == CellType::Empty {
-        grid.swap(x, y, x + 1, y + 1);
-        return;
-    }
 
-    if strona && x > 0 && grid.get(x - 1, y).cell_type == CellType::Empty {
-        grid.swap(x, y, x - 1, y);
-        return;
-    }
-
-    // ukos prawo
-    if x + 1 < grid.width && grid.get(x + 1, y ).cell_type == CellType::Empty {
-        grid.swap(x, y, x + 1, y);
-        return;
-    }
 }
 
 fn can_move(grid: &Grid, x: usize, y: usize, dx: i32, dy: i32) -> bool {

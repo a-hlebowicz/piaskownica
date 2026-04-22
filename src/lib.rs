@@ -39,34 +39,34 @@ impl Universe {
         self.grid.render();
     }
 
-    pub fn draw(&mut self, x: usize, y: usize, material: u8){
-        if self.grid.in_bounds(x,y){
+    pub fn draw(&mut self, x: usize, y: usize, material: u8) {
+        if self.grid.in_bounds(x, y) {
             let particle = material_to_particle(material);
             self.grid.set(x, y, particle);
+        } else {
+            log!("wartosc poza zakresem?");
         }
-        else {log!("wartosc poza zakresem?");}
     }
-    
+
     pub fn draw_line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, material: u8) {
         let particle = material_to_particle(material);
         self.grid.draw_line(x1, y1, x2, y2, particle);
     }
 
-    pub fn clear(&mut self){
+    pub fn clear(&mut self) {
         self.grid.clear();
     }
 
-    pub fn width(&self) ->usize{
+    pub fn width(&self) -> usize {
         self.grid.width
     }
-    pub fn height(&self) ->usize{
+    pub fn height(&self) -> usize {
         self.grid.height
     }
 
-    pub fn pixels_ptr(&self)-> *const u8{
+    pub fn pixels_ptr(&self) -> *const u8 {
         self.grid.pixels_ptr()
     }
-
 }
 fn material_to_particle(material: u8) -> Particle {
     match material {
