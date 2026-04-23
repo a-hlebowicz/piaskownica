@@ -47,9 +47,10 @@ fn update_water(grid: &mut Grid,x: usize,y: usize){
     if can_swap(grid, x, y, RIGHT,&lighter_than) { candidates.push(RIGHT); }
     if let Some(&dir) = fastrand::choice(&candidates) {
         try_swap(grid, x, y, dir, &lighter_than);
+        return;
     }
 
-    let mut candidates: Vec<(i32, i32)> = Vec::new();
+    candidates.clear();
     if can_swap(grid, x, y, DOWN_LEFT,&lighter_than) { candidates.push(DOWN_LEFT); }
     if can_swap(grid, x, y,DOWN_RIGHT,&lighter_than) { candidates.push(DOWN_RIGHT); }
     if let Some(&dir) = fastrand::choice(&candidates) {

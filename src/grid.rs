@@ -1,5 +1,3 @@
-use std::vec;
-
 use crate::particle::{CellType, Particle};
 
 pub struct Grid {

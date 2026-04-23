@@ -8,11 +8,12 @@ Propagacja ciepła działa też przez powietrze. Powietrze powoli dąży do temp
 
 ## materiały
  
-Planowane:
- 
 - `Empty` - powietrze, ma temperaturę
 - `Sand` - spada, inert
 - `Water` - spada i rozlewa się; paruje i zamarza
+
+ Planowane:
+
 - `Stone` - nieruchome, niepalne
 - `Wood` - nieruchome, zapala się w kontakcie z wysoką temperaturą
 - `Fire` - cząsteczka o wysokiej temperaturze, unosi się, gaśnie przez chłodzenie

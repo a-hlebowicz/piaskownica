@@ -4,7 +4,6 @@ mod physics;
 
 use crate::grid::Grid;
 use crate::particle::{CellType, Particle};
-use crate::physics::tick;
 use wasm_bindgen::prelude::*;
 
 //wypisywanie do przeglądarki
@@ -72,6 +71,8 @@ fn material_to_particle(material: u8) -> Particle {
     match material {
         1 => Particle::new_sand(),
         2 => Particle::new_water(),
+        3 => Particle::new_stone(),
+        4 => Particle::new_wood(),
         _ => Particle::new_empty(),
     }
 }
