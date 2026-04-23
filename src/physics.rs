@@ -2,17 +2,27 @@ use crate::grid::Grid;
 use crate::particle::CellType;
 
 pub fn tick(grid: &mut Grid) {
+    let reverse_x = fastrand::bool();
+
     for y in (0..grid.height).rev() {
-        for x in 0..grid.width {
-            if grid.get(x, y).has_moved {
-                continue;
+        if reverse_x {
+            for x in (0..grid.width).rev() {
+                update_cell(grid, x, y);
             }
-            match grid.get(x, y).cell_type {
-                CellType::Sand => update_sand(grid, x, y),
-                CellType::Water => update_water(grid,x,y),
-                _ => {}
+        } else {
+            for x in 0..grid.width {
+                update_cell(grid, x, y);
             }
         }
+    }
+}
+
+fn update_cell(grid: &mut Grid, x: usize, y: usize) {
+    if grid.get(x, y).has_moved { return; }
+    match grid.get(x, y).cell_type {
+        CellType::Sand => update_sand(grid, x, y),
+        CellType::Water => update_water(grid, x, y),
+        _ => {}
     }
 }
 
@@ -26,10 +36,10 @@ fn update_sand(grid: &mut Grid, x: usize, y: usize) {
     let mut candidates: Vec<(i32, i32)> = Vec::new();
 
     // ukos lewo
-    if can_swap(grid, x, y, DOWN_LEFT,&lighter_than) { candidates.push(DOWN_LEFT); }
+    if can_swap_diagonal(grid, x, y, DOWN_LEFT,&lighter_than) { candidates.push(DOWN_LEFT); }
 
     // ukos prawo
-    if can_swap(grid, x, y,DOWN_RIGHT,&lighter_than) { candidates.push(DOWN_RIGHT); }
+    if can_swap_diagonal(grid, x, y,DOWN_RIGHT,&lighter_than) { candidates.push(DOWN_RIGHT); }
 
     if let Some(&dir) = fastrand::choice(&candidates) {
         try_swap(grid, x, y, dir, &lighter_than);
@@ -43,16 +53,16 @@ fn update_water(grid: &mut Grid,x: usize,y: usize){
     if try_swap(grid, x, y, DOWN, &lighter_than) { return; }
 
     let mut candidates: Vec<(i32, i32)> = Vec::new();
-    if can_swap(grid, x, y, LEFT,&lighter_than) { candidates.push(LEFT); }
-    if can_swap(grid, x, y, RIGHT,&lighter_than) { candidates.push(RIGHT); }
+    if can_swap_diagonal(grid, x, y, DOWN_LEFT,&lighter_than) { candidates.push(DOWN_LEFT); }
+    if can_swap_diagonal(grid, x, y, DOWN_RIGHT,&lighter_than) { candidates.push(DOWN_RIGHT); }
     if let Some(&dir) = fastrand::choice(&candidates) {
         try_swap(grid, x, y, dir, &lighter_than);
         return;
     }
 
     candidates.clear();
-    if can_swap(grid, x, y, DOWN_LEFT,&lighter_than) { candidates.push(DOWN_LEFT); }
-    if can_swap(grid, x, y,DOWN_RIGHT,&lighter_than) { candidates.push(DOWN_RIGHT); }
+    if can_swap(grid, x, y, LEFT,&lighter_than) { candidates.push(LEFT); }
+    if can_swap(grid, x, y,RIGHT,&lighter_than) { candidates.push(RIGHT); }
     if let Some(&dir) = fastrand::choice(&candidates) {
         try_swap(grid, x, y, dir, &lighter_than);
     }
@@ -71,6 +81,13 @@ fn can_swap(grid: &Grid, x: usize, y: usize, dir: (i32, i32) , types: &[CellType
         if grid.is_type_at(x, y, dx, dy, t) { return true; }
     }
     false
+}
+fn can_swap_diagonal(grid: &Grid, x: usize, y: usize, dir: (i32, i32) , types: &[CellType])->bool{
+    if !can_swap(grid, x, y, dir, types) { return false; }
+    let (dx, dy) = dir;
+    let side = (dx, 0);
+    let vertical = (0, dy);
+    can_swap(grid, x, y, side, types) || can_swap(grid, x, y, vertical, types)
 }
 fn try_swap(grid: &mut Grid, x: usize, y: usize, dir: (i32, i32), types: &[CellType]) -> bool {
     if can_swap(grid,x,y,dir,types) {
