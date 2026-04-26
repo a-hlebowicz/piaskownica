@@ -6,6 +6,7 @@ pub enum CellType {
     Stone,
     Wood,
     Lava,
+    Metal,
 }
 impl CellType {
     pub fn color(&self) -> (u8, u8, u8, u8) {
@@ -16,6 +17,7 @@ impl CellType {
             CellType::Stone => (171, 164, 164, 255),
             CellType::Wood => (133, 74, 30, 255),
             CellType::Lava => (255, 104, 0, 255),
+            CellType::Metal => (140, 140, 150, 255),
         }
     }
 }
@@ -68,6 +70,13 @@ impl Particle {
             cell_type: CellType::Lava,
             has_moved: false,
             temperature: 1000,
+        }
+    }
+    pub fn new_metal() -> Particle{
+        Particle { 
+            cell_type: CellType::Metal, 
+            has_moved: false, 
+            temperature: 20, 
         }
     }
 }

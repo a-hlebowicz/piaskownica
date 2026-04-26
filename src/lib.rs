@@ -74,6 +74,7 @@ fn material_to_particle(material: u8) -> Particle {
         3 => Particle::new_stone(),
         4 => Particle::new_wood(),
         5 => Particle::new_lava(),
+        6 => Particle::new_metal(),
         _ => Particle::new_empty(),
     }
 }
