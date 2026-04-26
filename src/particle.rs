@@ -35,7 +35,7 @@ impl CellType {
             CellType::Water => 100,
             CellType::Stone => 40,
             CellType::Wood => 10,
-            CellType::Lava => 200,
+            CellType::Lava => 100,
             CellType::Metal => 250,
         }
     }
@@ -88,7 +88,7 @@ impl Particle {
         Particle {
             cell_type: CellType::Lava,
             has_moved: false,
-            temperature: 1000,
+            temperature: 1500,
         }
     }
     pub fn new_metal() -> Particle{

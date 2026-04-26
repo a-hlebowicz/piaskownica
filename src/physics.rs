@@ -1,5 +1,5 @@
 use crate::grid::Grid;
-use crate::particle::CellType;
+use crate::particle::{CellType, Particle};
 
 pub fn tick(grid: &mut Grid) {
     let reverse_x = fastrand::bool();
@@ -145,10 +145,11 @@ const UP: (i32, i32) = (0,-1);
 
 pub fn propagate_heat(grid: &mut Grid) {
     for y in 0..grid.height {
-        for x in 0..grid.height{
+        for x in 0..grid.width{
             let cell = grid.get(x,y);
             let cell_cond = cell.cell_type.conductivity() as i32;
             
+            //let cell_cond = if cell.cell_type == CellType::Lava { 500 } else { cell_cond };
             let mut sum_energy = (cell.temperature as i32) * cell_cond;
             let mut sum_cond = cell_cond;
 
@@ -170,7 +171,8 @@ pub fn propagate_heat(grid: &mut Grid) {
 
             //utrata ciepla powietrza
             if cell.cell_type == CellType::Empty {
-                new_temp -= 20;
+                let diff = 20 - new_temp as i32;
+                new_temp = new_temp + (diff / 50) as i16;
             }
 
             let i =grid.index(x, y);
@@ -182,5 +184,25 @@ pub fn propagate_heat(grid: &mut Grid) {
 
     for i in 0..grid.cells.len(){
         grid.cells[i].temperature =grid.temperatures_next[i];
+    }
+}
+
+pub fn apply_temperature_effects(grid: &mut Grid) {
+    for y in 0..grid.height {
+        for x in 0..grid.width {
+            let cell = grid.get(x, y);
+            let new_type = match (cell.cell_type, cell.temperature) {
+                (CellType::Lava, t) if t < 800 => Some(CellType::Stone),
+                _ => None,
+            };
+            if let Some(new) = new_type {
+                let mut new_cell = match new {
+                    CellType::Stone => Particle::new_stone(),
+                    _ => Particle::new_empty(),
+                };
+                new_cell.temperature = cell.temperature;  // zachowaj temperaturę
+                grid.set(x, y, new_cell);
+            }
+        }
     }
 }
