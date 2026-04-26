@@ -35,6 +35,7 @@ impl Universe {
     pub fn tick(&mut self) {
         self.grid.resed_moved_flags();
         physics::tick(&mut self.grid);
+        physics::propagate_heat(&mut self.grid);
         self.grid.render();
     }
 

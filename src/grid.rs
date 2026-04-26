@@ -3,8 +3,9 @@ use crate::particle::{CellType, Particle};
 pub struct Grid {
     pub width: usize,
     pub height: usize,
-    cells: Vec<Particle>,
+    pub cells: Vec<Particle>,
     pixels: Vec<u8>,
+    pub temperatures_next: Vec<i16>,
 }
 
 impl Grid {
@@ -12,11 +13,13 @@ impl Grid {
         let total = width * height;
         let cells = vec![Particle::new_empty(); total];
         let pixels = vec![0u8; total * 4]; //RGBA
+        let temperatures_next = vec![20i16; total];
         Grid {
             width,
             height,
             cells,
             pixels,
+            temperatures_next,
         }
     }
     pub fn index(&self, x: usize, y: usize) -> usize {
@@ -74,8 +77,7 @@ impl Grid {
             for x in 0..self.width {
                 let i = self.index(x, y);
                 let particle = self.get(x, y);
-
-                let (r, g, b, a) = particle.cell_type.color();
+                let (r, g, b, a) = particle.cell_type.color(particle.temperature);
                 let i4 = i * 4; //tablica pikseli ma 4 pola na każdy pixel, wiec iterujemy co 4
                 self.pixels[i4] = r;
                 self.pixels[i4 + 1] = g;

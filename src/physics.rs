@@ -139,3 +139,48 @@ const DOWN_LEFT: (i32, i32) = (-1, 1);
 const DOWN_RIGHT: (i32, i32) = (1, 1);
 const LEFT: (i32, i32) = (-1, 0);
 const RIGHT: (i32, i32) = (1, 0);
+const UP: (i32, i32) = (0,-1);
+
+
+
+pub fn propagate_heat(grid: &mut Grid) {
+    for y in 0..grid.height {
+        for x in 0..grid.height{
+            let cell = grid.get(x,y);
+            let cell_cond = cell.cell_type.conductivity() as i32;
+            
+            let mut sum_energy = (cell.temperature as i32) * cell_cond;
+            let mut sum_cond = cell_cond;
+
+            for (dx, dy) in [LEFT, RIGHT, DOWN,UP] {
+                let nx = x as i32 +dx;
+                let ny =y as i32 + dy;
+                if !grid.in_bounds_i32(nx, ny) {continue;}
+                let ncell = grid.get(nx as usize,ny as usize);
+                let ncond = ncell.cell_type.conductivity() as i32;
+                sum_energy += (ncell.temperature as i32) * ncond;
+                sum_cond += ncond;
+            }  
+            
+            let mut new_temp = if sum_cond > 0 {
+                (sum_energy / sum_cond) as i16
+            } else {
+                cell.temperature
+            };
+
+            //utrata ciepla powietrza
+            if cell.cell_type == CellType::Empty {
+                new_temp -= 20;
+            }
+
+            let i =grid.index(x, y);
+            grid.temperatures_next[i] =new_temp;
+
+
+        }
+    }
+
+    for i in 0..grid.cells.len(){
+        grid.cells[i].temperature =grid.temperatures_next[i];
+    }
+}
