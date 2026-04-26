@@ -30,7 +30,7 @@ async function run() {
     let lastY = -1;
     let lastDrawX = -1;
     let lastDrawY = -1;
-
+    
     canvas.addEventListener('mousedown', (event) => {
         mouseDown = true;
         lastX = Math.floor(event.offsetX / scale);
@@ -54,6 +54,10 @@ async function run() {
         // pozycja myszy w siatce (nie na canvasie)
         lastX = Math.floor(event.offsetX / scale);
         lastY = Math.floor(event.offsetY / scale);
+        const x = Math.floor(event.offsetX / scale);
+        const y = Math.floor(event.offsetY / scale);
+        const temp = universe.debug_at(x, y);
+        document.getElementById('debug').innerText = `(${x}, ${y}): ${temp}°C`;
     });
 
     function gameLoop() {

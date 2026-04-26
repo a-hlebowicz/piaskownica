@@ -171,16 +171,22 @@ pub fn propagate_heat(grid: &mut Grid) {
 
                 let n_temp = ncell.temperature as i32;
                 let n_cond = ncell.cell_type.conductivity() as i32;
+                let temp_diff = n_temp - cell_temp;
 
                 let exchange_rate = (cell_cond * n_cond) / FLOW_DIVISOR;
-                let flow = (n_temp - cell_temp) * exchange_rate / 100;
+                let flow = (temp_diff) * exchange_rate / 100;
+                let flow = if flow == 0 && temp_diff != 0 {
+                    temp_diff.signum()
+                } else {
+                    flow
+                };
                 total_flow += flow;
             }
 
             let new_temp = cell_temp + total_flow;
 
             let i = grid.index(x, y);
-            grid.temperatures_next[i] = new_temp.clamp(-200, 2000) as i16;
+            grid.temperatures_next[i] = new_temp as i16;
         }
     }
 
