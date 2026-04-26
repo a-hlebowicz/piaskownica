@@ -3,7 +3,7 @@ mod particle;
 mod physics;
 
 use crate::grid::Grid;
-use crate::particle::{CellType, Particle};
+use crate::particle::Particle;
 use wasm_bindgen::prelude::*;
 
 //wypisywanie do przeglądarki
@@ -77,6 +77,7 @@ fn material_to_particle(material: u8) -> Particle {
         4 => Particle::new_wood(),
         5 => Particle::new_lava(),
         6 => Particle::new_metal(),
+        7 => Particle::new_ice(),
         _ => Particle::new_empty(),
     }
 }

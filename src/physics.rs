@@ -195,11 +195,15 @@ pub fn apply_temperature_effects(grid: &mut Grid) {
             let cell = grid.get(x, y);
             let new_type = match (cell.cell_type, cell.temperature) {
                 (CellType::Lava, t) if t < 800 => Some(CellType::Stone),
+                (CellType::Ice, t) if t > 10 => Some(CellType::Water),
+                (CellType::Water, t) if t < -10 => Some(CellType::Ice),
                 _ => None,
             };
             if let Some(new) = new_type {
                 let mut new_cell = match new {
                     CellType::Stone => Particle::new_stone(),
+                    CellType::Water => Particle::new_water(),
+                    CellType::Ice => Particle::new_ice(),
                     _ => Particle::new_empty(),
                 };
                 new_cell.temperature = cell.temperature; 
