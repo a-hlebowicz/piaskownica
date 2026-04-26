@@ -14,6 +14,9 @@ impl CellType {
         if *self == CellType::Metal {
             return metal_glow(color, temperature);
         }
+        if *self == CellType::Empty {
+            return air_debug(color, temperature);
+    }
         color
     }
     pub fn base_color(&self) -> (u8, u8, u8, u8) {
@@ -113,4 +116,17 @@ fn metal_glow(base: (u8, u8, u8, u8), temp: i16) -> (u8, u8, u8, u8) {
     let b = base.2.saturating_sub(intensity / 2);
 
     (r, g, b, 255)
+}
+fn air_debug(base: (u8, u8, u8, u8), temp: i16) -> (u8, u8, u8, u8) {
+    if temp > 25 {
+        // gorące powietrze ; czerwień
+        let intensity = ((temp - 25).max(0) as u32 * 200 / 500).min(150) as u8;
+        return (40 + intensity, 40, 40, 255);
+    }
+    if temp < 15 {
+        // zimne powietrze ; niebieskość
+        let intensity = ((15 - temp).max(0) as u32 * 200 / 100).min(150) as u8;
+        return (40, 40, 40 + intensity, 255);
+    }
+    base
 }

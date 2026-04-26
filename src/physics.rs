@@ -142,48 +142,50 @@ const RIGHT: (i32, i32) = (1, 0);
 const UP: (i32, i32) = (0,-1);
 
 
-
 pub fn propagate_heat(grid: &mut Grid) {
+    const FLOW_DIVISOR: i32 = 3000;
+
     for y in 0..grid.height {
-        for x in 0..grid.width{
-            let cell = grid.get(x,y);
-            let cell_cond = cell.cell_type.conductivity() as i32;
-            
-            //let cell_cond = if cell.cell_type == CellType::Lava { 500 } else { cell_cond };
-            let mut sum_energy = (cell.temperature as i32) * cell_cond;
-            let mut sum_cond = cell_cond;
+        for x in 0..grid.width {
+            let cell = grid.get(x, y);
 
-            for (dx, dy) in [LEFT, RIGHT, DOWN,UP] {
-                let nx = x as i32 +dx;
-                let ny =y as i32 + dy;
-                if !grid.in_bounds_i32(nx, ny) {continue;}
-                let ncell = grid.get(nx as usize,ny as usize);
-                let ncond = ncell.cell_type.conductivity() as i32;
-                sum_energy += (ncell.temperature as i32) * ncond;
-                sum_cond += ncond;
-            }  
-            
-            let mut new_temp = if sum_cond > 0 {
-                (sum_energy / sum_cond) as i16
-            } else {
-                cell.temperature
-            };
-
-            //utrata ciepla powietrza
             if cell.cell_type == CellType::Empty {
-                let diff = 20 - new_temp as i32;
-                new_temp = new_temp + (diff / 50) as i16;
+                let i = grid.index(x, y);
+                grid.temperatures_next[i] = cell.temperature;
+                continue;
             }
 
-            let i =grid.index(x, y);
-            grid.temperatures_next[i] =new_temp;
+            let cell_temp = cell.temperature as i32;
+            let cell_cond = cell.cell_type.conductivity() as i32;
+            let mut total_flow: i32 = 0;
 
+            for (dx, dy) in [LEFT, RIGHT, DOWN, UP] {
+                let nx = x as i32 + dx;
+                let ny = y as i32 + dy;
+                if !grid.in_bounds_i32(nx, ny) { continue; }
+                let ncell = grid.get(nx as usize, ny as usize);
 
+                if ncell.cell_type == CellType::Empty {
+                    continue;
+                }
+
+                let n_temp = ncell.temperature as i32;
+                let n_cond = ncell.cell_type.conductivity() as i32;
+
+                let exchange_rate = (cell_cond * n_cond) / FLOW_DIVISOR;
+                let flow = (n_temp - cell_temp) * exchange_rate / 100;
+                total_flow += flow;
+            }
+
+            let new_temp = cell_temp + total_flow;
+
+            let i = grid.index(x, y);
+            grid.temperatures_next[i] = new_temp.clamp(-200, 2000) as i16;
         }
     }
 
-    for i in 0..grid.cells.len(){
-        grid.cells[i].temperature =grid.temperatures_next[i];
+    for i in 0..grid.cells.len() {
+        grid.cells[i].temperature = grid.temperatures_next[i];
     }
 }
 
@@ -200,7 +202,7 @@ pub fn apply_temperature_effects(grid: &mut Grid) {
                     CellType::Stone => Particle::new_stone(),
                     _ => Particle::new_empty(),
                 };
-                new_cell.temperature = cell.temperature;  // zachowaj temperaturę
+                new_cell.temperature = cell.temperature; 
                 grid.set(x, y, new_cell);
             }
         }
