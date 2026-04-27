@@ -4,24 +4,18 @@ Symulacja cząstek w stylu falling-sand z propagacją temperatury. Rust + WebAss
 Każda komórka to cząsteczka z typem (piasek, woda, ogień, itd.) i temperaturą. Cząsteczki spadają, woda się rozlewa, ogień się rozprzestrzenia, lód topnieje. Temperatura propaguje się przez sąsiadów zgodnie z przewodnictwem cieplnym danego materiału.
 Użytkownik rysuje materiały myszą.
 
-Propagacja ciepła działa też przez powietrze. Powietrze powoli dąży do temperatury pokojowej, żeby ciepło się nie kumulowało bez ograniczeń.
-
 ## materiały
  
-- `Empty` - powietrze, ma temperaturę
-- `Sand` - spada, inert
-- `Water` - spada i rozlewa się; paruje i zamarza
-
- Planowane:
-
-- `Stone` - nieruchome, niepalne
-- `Wood` - nieruchome, zapala się w kontakcie z wysoką temperaturą
-- `Fire` - cząsteczka o wysokiej temperaturze, unosi się, gaśnie przez chłodzenie
-- `Smoke` - produkt ognia, unosi się
-- `Ice` - nieruchome, topi się w wodę
-- `Lava` - płynie jak woda, zamarza w kamień
-- `Steam` - produkt parowania, unosi się, skrapla w wodę
-Każdy materiał ma również `heat_capacity` (jak szybko zmienia temperaturę).
+- `Empty` - powietrze
+- `Piasek` - spada
+- `Woda` - spada i rozlewa się; paruje i zamarza
+- `Kamień` - nieruchome, niepalne
+- `Drewno` - nieruchome, zapala się w kontakcie z wysoką temperaturą
+- `Ogień` - cząsteczka o wysokiej temperaturze, unosi się, gaśnie przez chłodzenie
+- `Lód` - nieruchome, topi się w wodę
+- `Lawa` - płynie jak woda, zamarza w kamień
+- `PAra` - produkt parowania, unosi się, skrapla w wodę
+Każdy materiał ma również temperature i swoje conductivity.
 
 ## stack
  
