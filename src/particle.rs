@@ -40,12 +40,12 @@ impl CellType {
             CellType::Sand => 30,
             CellType::Water => 100,
             CellType::Stone => 40,
-            CellType::Wood => 10,
+            CellType::Wood => 50,
             CellType::Lava => 100,
             CellType::Metal => 250,
             CellType::Ice => 40,
             CellType::Steam => 30,
-            CellType::Fire => 80,
+            CellType::Fire => 100,
         }
     }
 }

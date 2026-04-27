@@ -77,7 +77,26 @@ fn update_steam(grid: &mut Grid, x: usize, y: usize) {
 }
 
 fn update_fire(grid: &mut Grid, x: usize, y: usize) {
-    update_gas(grid, x, y);
+    //fn update_fire(grid: &mut Grid, x: usize, y: usize) {
+    let lighter_than = [CellType::Empty];
+
+    let mut candidates: Vec<(i32, i32)> = Vec::new();
+    
+    candidates.push((0,0));
+    candidates.push((0,0));
+    candidates.push((0,0));
+
+    if can_swap(grid, x, y, UP, &lighter_than) { candidates.push(UP); }
+    if can_swap_diagonal(grid, x, y, UP_LEFT, &lighter_than) { candidates.push(UP_LEFT); }
+    if can_swap_diagonal(grid, x, y, UP_RIGHT, &lighter_than) { candidates.push(UP_RIGHT); }
+    if can_swap_diagonal(grid, x, y, DOWN_LEFT, &lighter_than) { candidates.push(DOWN_LEFT); }
+    if can_swap_diagonal(grid, x, y, DOWN_RIGHT, &lighter_than) { candidates.push(DOWN_RIGHT); }
+    if can_swap(grid, x, y, LEFT, &lighter_than) { candidates.push(LEFT); }
+    if can_swap(grid, x, y, RIGHT, &lighter_than) { candidates.push(RIGHT); }
+
+    if let Some(&dir) = fastrand::choice(&candidates) {
+        try_swap(grid, x, y, dir, &lighter_than);
+    }
 }
 
 fn update_liquid(grid: &mut Grid, x: usize, y: usize) {
@@ -270,7 +289,9 @@ const FLOW_DIVISOR: i32 = 3000;
 
 fn apply_passive_cooling(cell_type: CellType, temp: i32) -> i32 {
     match cell_type {
-        CellType::Fire => temp - 5,
+        CellType::Fire => {
+            temp - fastrand::i32(1..5)
+        },
         _ => temp,
     }
 }
@@ -286,7 +307,10 @@ pub fn apply_temperature_effects(grid: &mut Grid) {
                 (CellType::Water, t) if t > 110 => Some(CellType::Steam),
                 (CellType::Steam, t) if t < 90 => Some(CellType::Water),
                 (CellType::Fire, t) if t < 300 => Some(CellType::Empty),
-                (CellType::Wood, t) if t > 100 => Some(CellType::Fire),
+                (CellType::Wood, t) if t > 50 => {
+                    ignite_neighbors(grid, x, y);
+                    Some(CellType::Fire)
+                },
                 _ => None,
             };
             if let Some(new) = new_type {
@@ -303,6 +327,18 @@ pub fn apply_temperature_effects(grid: &mut Grid) {
                 }
                 grid.set(x, y, new_cell);
             }
+        }
+    }
+}
+
+fn ignite_neighbors(grid: &mut Grid, x: usize, y: usize) {
+    for (dx, dy, _) in NEIGHBORS {
+        let nx = x as i32 + dx;
+        let ny = y as i32 + dy;
+        if !grid.in_bounds_i32(nx, ny) { continue; }
+        let neighbor = grid.get(nx as usize, ny as usize);
+        if neighbor.cell_type == CellType::Empty && fastrand::f32() < 0.5 {
+            grid.set(nx as usize, ny as usize, Particle::new_fire());
         }
     }
 }
