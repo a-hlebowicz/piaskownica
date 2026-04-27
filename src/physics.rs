@@ -1,4 +1,3 @@
-use std::cell::Cell;
 
 use crate::grid::Grid;
 use crate::particle::{CellType, Particle};
@@ -28,6 +27,7 @@ fn update_cell(grid: &mut Grid, x: usize, y: usize) {
         CellType::Water => update_water(grid, x, y),
         CellType::Lava => update_lava(grid, x, y),
         CellType::Steam => update_steam(grid, x, y),
+        CellType::Fire => update_fire(grid, x, y),
         _ => {}
     }
 }
@@ -69,6 +69,10 @@ fn update_lava(grid: &mut Grid, x: usize, y: usize){
 }
 
 fn update_steam(grid: &mut Grid, x:usize, y:usize){
+    update_gas(grid, x, y);
+}
+
+fn update_fire(grid: &mut Grid, x:usize, y:usize){
     update_gas(grid, x, y);
 }
 
@@ -225,8 +229,10 @@ pub fn propagate_heat(grid: &mut Grid) {
                 total_flow += flow;
             }
 
-            let new_temp = cell_temp + total_flow;
-
+            let mut new_temp = cell_temp + total_flow;
+            if cell.cell_type == CellType::Fire {
+                new_temp -= 5;
+            }
             let i = grid.index(x, y);
             grid.temperatures_next[i] = new_temp as i16;
         }
@@ -247,6 +253,8 @@ pub fn apply_temperature_effects(grid: &mut Grid) {
                 (CellType::Water, t) if t < -10 => Some(CellType::Ice),
                 (CellType::Water, t) if t > 110 => Some(CellType::Steam),
                 (CellType::Steam, t) if t < 90 => Some(CellType::Water),
+                (CellType::Fire, t) if t < 300 => Some(CellType::Empty),
+                (CellType::Wood, t) if t > 100 => Some(CellType::Fire),
                 _ => None,
             };
             if let Some(new) = new_type {
@@ -255,9 +263,12 @@ pub fn apply_temperature_effects(grid: &mut Grid) {
                     CellType::Water => Particle::new_water(),
                     CellType::Ice => Particle::new_ice(),
                     CellType::Steam => Particle::new_steam(),
+                    CellType::Fire => Particle::new_fire(),
                     _ => Particle::new_empty(),
                 };
-                new_cell.temperature = cell.temperature; 
+                if !matches!(new, CellType::Fire) {
+                    new_cell.temperature = cell.temperature;
+                } 
                 grid.set(x, y, new_cell);
             }
         }
