@@ -33,7 +33,7 @@ impl CellType {
             CellType::Fire => (255, 140, 30, 255),
         }
     }
-    
+
     pub fn conductivity(&self) -> u8 {
         match self {
             CellType::Empty => 30,
@@ -100,15 +100,15 @@ impl Particle {
             temperature: 1500,
         }
     }
-    pub fn new_metal() -> Particle{
-        Particle { 
-            cell_type: CellType::Metal, 
-            has_moved: false, 
-            temperature: 20, 
+    pub fn new_metal() -> Particle {
+        Particle {
+            cell_type: CellType::Metal,
+            has_moved: false,
+            temperature: 20,
         }
     }
-    pub fn new_ice() -> Particle{
-        Particle { 
+    pub fn new_ice() -> Particle {
+        Particle {
             cell_type: CellType::Ice,
             has_moved: false,
             temperature: -100,

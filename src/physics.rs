@@ -1,4 +1,3 @@
-
 use crate::grid::Grid;
 use crate::particle::{CellType, Particle};
 
@@ -37,7 +36,12 @@ fn update_sand(grid: &mut Grid, x: usize, y: usize) {
         return;
     }
 
-    let lighter_than = [CellType::Empty, CellType::Water, CellType::Lava, CellType::Steam]; //nie wiem jak to ładniej nazwać
+    let lighter_than = [
+        CellType::Empty,
+        CellType::Water,
+        CellType::Lava,
+        CellType::Steam,
+    ]; //nie wiem jak to ładniej nazwać
 
     if try_swap(grid, x, y, DOWN, &lighter_than) {
         return;
@@ -60,19 +64,19 @@ fn update_sand(grid: &mut Grid, x: usize, y: usize) {
     }
 }
 
-fn update_water(grid: &mut Grid, x: usize, y: usize){
+fn update_water(grid: &mut Grid, x: usize, y: usize) {
     update_liquid(grid, x, y);
 }
 
-fn update_lava(grid: &mut Grid, x: usize, y: usize){
+fn update_lava(grid: &mut Grid, x: usize, y: usize) {
     update_liquid(grid, x, y);
 }
 
-fn update_steam(grid: &mut Grid, x:usize, y:usize){
+fn update_steam(grid: &mut Grid, x: usize, y: usize) {
     update_gas(grid, x, y);
 }
 
-fn update_fire(grid: &mut Grid, x:usize, y:usize){
+fn update_fire(grid: &mut Grid, x: usize, y: usize) {
     update_gas(grid, x, y);
 }
 
@@ -183,14 +187,11 @@ const DOWN_LEFT: (i32, i32) = (-1, 1);
 const DOWN_RIGHT: (i32, i32) = (1, 1);
 const LEFT: (i32, i32) = (-1, 0);
 const RIGHT: (i32, i32) = (1, 0);
-const UP: (i32, i32) = (0,-1);
-const UP_LEFT: (i32, i32) = (-1,-1);
-const UP_RIGHT: (i32, i32) = (1,-1);
-
+const UP: (i32, i32) = (0, -1);
+const UP_LEFT: (i32, i32) = (-1, -1);
+const UP_RIGHT: (i32, i32) = (1, -1);
 
 pub fn propagate_heat(grid: &mut Grid) {
-    const FLOW_DIVISOR: i32 = 3000;
-
     for y in 0..grid.height {
         for x in 0..grid.width {
             let cell = grid.get(x, y);
@@ -201,38 +202,10 @@ pub fn propagate_heat(grid: &mut Grid) {
                 continue;
             }
 
-            let cell_temp = cell.temperature as i32;
-            let cell_cond = cell.cell_type.conductivity() as i32;
-            let mut total_flow: i32 = 0;
+            let total_flow = total_flow(grid, x, y, cell);
+            let mut new_temp = cell.temperature as i32 + total_flow;
+            new_temp = apply_passive_cooling(cell.cell_type, new_temp);
 
-            for (dx, dy) in [LEFT, RIGHT, DOWN, UP] {
-                let nx = x as i32 + dx;
-                let ny = y as i32 + dy;
-                if !grid.in_bounds_i32(nx, ny) { continue; }
-                let ncell = grid.get(nx as usize, ny as usize);
-
-                if ncell.cell_type == CellType::Empty {
-                    continue;
-                }
-
-                let n_temp = ncell.temperature as i32;
-                let n_cond = ncell.cell_type.conductivity() as i32;
-                let temp_diff = n_temp - cell_temp;
-
-                let exchange_rate = (cell_cond * n_cond) / FLOW_DIVISOR;
-                let flow = (temp_diff) * exchange_rate / 100;
-                let flow = if flow == 0 && temp_diff != 0 {
-                    temp_diff.signum()
-                } else {
-                    flow
-                };
-                total_flow += flow;
-            }
-
-            let mut new_temp = cell_temp + total_flow;
-            if cell.cell_type == CellType::Fire {
-                new_temp -= 5;
-            }
             let i = grid.index(x, y);
             grid.temperatures_next[i] = new_temp as i16;
         }
@@ -240,6 +213,65 @@ pub fn propagate_heat(grid: &mut Grid) {
 
     for i in 0..grid.cells.len() {
         grid.cells[i].temperature = grid.temperatures_next[i];
+    }
+}
+fn total_flow(grid: &Grid, x: usize, y: usize, cell: Particle) -> i32 {
+    let cell_temp = cell.temperature as i32;
+    let cell_cond = cell.cell_type.conductivity() as i32;
+    let mut total = 0;
+
+    for (dx, dy, is_diagonal) in NEIGHBORS {
+        let nx = x as i32 + dx;
+        let ny = y as i32 + dy;
+        if !grid.in_bounds_i32(nx, ny) {
+            continue;
+        }
+        let ncell = grid.get(nx as usize, ny as usize);
+        if ncell.cell_type == CellType::Empty {
+            continue;
+        }
+
+        total += flow(
+            cell_temp,
+            cell_cond,
+            ncell.temperature as i32,
+            ncell.cell_type.conductivity() as i32,
+            is_diagonal,
+        );
+    }
+    total
+}
+fn flow(cell_temp: i32, cell_cond: i32, n_temp: i32, n_cond: i32, is_diagonal: bool) -> i32 {
+    let temp_diff = n_temp - cell_temp;
+    let divisor = if is_diagonal {
+        FLOW_DIVISOR * 2
+    } else {
+        FLOW_DIVISOR
+    };
+    let exchange_rate = (cell_cond * n_cond) / divisor;
+    let flow = temp_diff * exchange_rate / 100;
+    if flow == 0 && temp_diff != 0 {
+        temp_diff.signum()
+    } else {
+        flow
+    }
+}
+const NEIGHBORS: [(i32, i32, bool); 8] = [
+    (-1, 0, false),
+    (1, 0, false),
+    (0, -1, false),
+    (0, 1, false),
+    (-1, -1, true),
+    (1, -1, true),
+    (-1, 1, true),
+    (1, 1, true),
+];
+const FLOW_DIVISOR: i32 = 3000;
+
+fn apply_passive_cooling(cell_type: CellType, temp: i32) -> i32 {
+    match cell_type {
+        CellType::Fire => temp - 5,
+        _ => temp,
     }
 }
 
@@ -268,7 +300,7 @@ pub fn apply_temperature_effects(grid: &mut Grid) {
                 };
                 if !matches!(new, CellType::Fire) {
                     new_cell.temperature = cell.temperature;
-                } 
+                }
                 grid.set(x, y, new_cell);
             }
         }

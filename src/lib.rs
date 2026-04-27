@@ -69,12 +69,12 @@ impl Universe {
         self.grid.pixels_ptr()
     }
     pub fn debug_at(&self, x: usize, y: usize) -> i16 {
-    if self.grid.in_bounds(x, y) {
-        self.grid.get(x, y).temperature
-    } else {
-        0
+        if self.grid.in_bounds(x, y) {
+            self.grid.get(x, y).temperature
+        } else {
+            0
+        }
     }
-}
 }
 fn material_to_particle(material: u8) -> Particle {
     match material {
