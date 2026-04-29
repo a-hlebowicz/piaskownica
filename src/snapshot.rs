@@ -35,16 +35,17 @@ pub fn import(grid: &mut Grid, json: &str) -> Result<(), String>{
     let snapshot: Snapshot =serde_json::from_str(json).map_err(|e| format!("Błąd parsowania JSON: {}", e))?;
 
     if snapshot.width != grid.width || snapshot.height != grid.height {
-        return Err(format!("niezgodny rozmiar planszy"));
+        return Err(format!("niezgodny rozmiar: plik ma {}x{}, oczekiwano {}x{}",snapshot.width, snapshot.height, grid.width, grid.height));
     }
     
     if snapshot.cell_types.len() != grid.width *grid.height || snapshot.cell_temps.len() != grid.width *grid.height {
-        return Err(format!("niezgodna liczba cząstek"))
+        return Err(format!("Niezgodna liczba cząsteczek: plik ma {} i {} temperatur, oczekiwano {}",
+         snapshot.cell_types.len(),snapshot.cell_temps.len(), grid.width * grid.height))
     }
 
-    for i in 0..grid.height * grid.width {
-        let cell_type = CellType::from_str(&snapshot.cell_types[i])?;
-        let temperature = snapshot.cell_temps[i]; //&
+    for (i, type_str) in snapshot.cell_types.iter().enumerate() {
+        let cell_type = CellType::from_str(type_str)?;
+        let temperature = snapshot.cell_temps[i];
         let mut particle = Particle::new_empty();
         particle.cell_type=cell_type; 
         particle.temperature=temperature;
