@@ -65,16 +65,19 @@ fn update_sand(grid: &mut Grid, x: usize, y: usize) {
     }
 }
 
+const LIQUID_HEAVY: &[CellType] = &[CellType::Empty, CellType::Steam, CellType::Oil];
+const LIQUID_LIGHT: &[CellType] = &[CellType::Empty, CellType::Steam];
 fn update_water(grid: &mut Grid, x: usize, y: usize) {
-    update_liquid(grid, x, y);
+    update_liquid(grid, x, y,LIQUID_HEAVY);
+    
 }
 
 fn update_lava(grid: &mut Grid, x: usize, y: usize) {
-    update_liquid(grid, x, y);
+    update_liquid(grid, x, y,LIQUID_HEAVY);
 }
 
 fn update_oil(grid: &mut Grid, x: usize, y:usize){
-    update_liquid(grid, x, y);
+    update_liquid(grid, x, y, LIQUID_LIGHT);
 }
 
 fn update_steam(grid: &mut Grid, x: usize, y: usize) {
@@ -104,37 +107,37 @@ fn update_fire(grid: &mut Grid, x: usize, y: usize) {
     }
 }
 
-fn update_liquid(grid: &mut Grid, x: usize, y: usize) {
+fn update_liquid(grid: &mut Grid, x: usize, y: usize, lighter_than: &[CellType]) {
     if y + 1 >= grid.height {
         return;
     }
-    let lighter_than = [CellType::Empty, CellType::Steam];
+    //let lighter_than = [CellType::Empty, CellType::Steam];
     // dół
-    if try_swap(grid, x, y, DOWN, &lighter_than) {
+    if try_swap(grid, x, y, DOWN, lighter_than) {
         return;
     }
 
     let mut candidates: Vec<(i32, i32)> = Vec::new();
-    if can_swap_diagonal(grid, x, y, DOWN_LEFT, &lighter_than) {
+    if can_swap_diagonal(grid, x, y, DOWN_LEFT, lighter_than) {
         candidates.push(DOWN_LEFT);
     }
-    if can_swap_diagonal(grid, x, y, DOWN_RIGHT, &lighter_than) {
+    if can_swap_diagonal(grid, x, y, DOWN_RIGHT, lighter_than) {
         candidates.push(DOWN_RIGHT);
     }
     if let Some(&dir) = fastrand::choice(&candidates) {
-        try_swap(grid, x, y, dir, &lighter_than);
+        try_swap(grid, x, y, dir, lighter_than);
         return;
     }
 
     candidates.clear();
-    if can_swap(grid, x, y, LEFT, &lighter_than) {
+    if can_swap(grid, x, y, LEFT, lighter_than) {
         candidates.push(LEFT);
     }
-    if can_swap(grid, x, y, RIGHT, &lighter_than) {
+    if can_swap(grid, x, y, RIGHT, lighter_than) {
         candidates.push(RIGHT);
     }
     if let Some(&dir) = fastrand::choice(&candidates) {
-        try_swap(grid, x, y, dir, &lighter_than);
+        try_swap(grid, x, y, dir, lighter_than);
     }
 }
 
