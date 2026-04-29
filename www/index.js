@@ -59,7 +59,7 @@ async function run() {
         const temp = universe.debug_at(x, y);
         document.getElementById('debug').innerText = `(${x}, ${y}): ${temp}°C`;
     });
-    
+
     const saveBtn = document.getElementById('save-btn');
     const loadBtn = document.getElementById('load-btn');
     const loadInput = document.getElementById('load-input');
@@ -113,6 +113,14 @@ async function run() {
         reader.readAsText(file);
         
         loadInput.value = '';
+        universe.render();
+    });
+
+    let paused = false;
+    const pauseBtn = document.getElementById('pause-btn');
+    pauseBtn.addEventListener('click', () => {
+        paused = !paused;
+        pauseBtn.textContent = paused ? '▶ Wznów' : '⏸ Pauza';
     });
 
     function gameLoop() {
@@ -126,7 +134,10 @@ async function run() {
             lastDrawY = lastY;
         }
 
-        universe.tick();
+        if (!paused) {
+            universe.tick();
+        }
+        universe.render();
 
         const pixelsPtr = universe.pixels_ptr();
         const pixels = new Uint8ClampedArray(

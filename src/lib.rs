@@ -38,6 +38,9 @@ impl Universe {
         physics::tick(&mut self.grid);
         physics::propagate_heat(&mut self.grid);
         physics::apply_temperature_effects(&mut self.grid);
+    }
+
+    pub fn render(&mut self){
         self.grid.render();
     }
 
