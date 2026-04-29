@@ -1,6 +1,7 @@
 mod grid;
 mod particle;
 mod physics;
+mod snapshot;
 
 use crate::grid::Grid;
 use crate::particle::Particle;
