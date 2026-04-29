@@ -1,6 +1,4 @@
-# Piaskownica
- 
-![Piaskownica](cover.gif)
+ ![Piaskownica](cover.gif)
 
 Symulacja cząstek w stylu falling-sand z propagacją temperatury. Rust + WebAssembly, Canvas 2D.
  
@@ -18,6 +16,9 @@ Każda komórka to cząsteczka z typem (piasek, woda, ogień, itd.) i temperatur
 - `Lawa` - płynie jak woda, zamarza w kamień poniżej 800°C
 - `Para` - unosi się, skrapla w wodę poniżej 90°C
 - `Metal` - nieruchomy, świetnie przewodzi ciepło; świeci na czerwono gdy gorący
+- `Olej` - lżejszy od wody, łatwopalny
+- `Zimno` - zimno odpowiednik ognia
+
 Każdy materiał ma temperaturę (`i16`, °C) i `conductivity` (jak chętnie wymienia ciepło).
  
 ## fizyka temperatury
