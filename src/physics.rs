@@ -28,6 +28,7 @@ fn update_cell(grid: &mut Grid, x: usize, y: usize) {
         CellType::Steam => update_steam(grid, x, y),
         CellType::Fire => update_fire(grid, x, y),
         CellType::Oil => update_oil(grid,x,y),
+        CellType::Cold => update_fire(grid,x,y),
         _ => {}
     }
 }
@@ -300,6 +301,9 @@ fn apply_passive_cooling(cell_type: CellType, temp: i32) -> i32 {
         CellType::Fire => {
             temp - fastrand::i32(1..5)
         },
+        CellType::Cold => {
+            temp +fastrand::i32(1..10)
+        }
         _ => temp,
     }
 }
@@ -315,11 +319,12 @@ pub fn apply_temperature_effects(grid: &mut Grid) {
                 (CellType::Water, t) if t > 110 => Some(CellType::Steam),
                 (CellType::Steam, t) if t < 90 => Some(CellType::Water),
                 (CellType::Fire, t) if t < 300 => Some(CellType::Empty),
-                (CellType::Wood, t) if t > 50 => {
+                (CellType::Wood| CellType::Oil, t) if t > 50 => {
                     ignite_neighbors(grid, x, y);
                     Some(CellType::Fire)
                 },
                 (CellType::Oil,t ) if t >100 => Some(CellType::Fire),
+                (CellType::Cold, t) if t > -300 => Some(CellType::Empty),
                 _ => None,
             };
             if let Some(new) = new_type {
