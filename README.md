@@ -1,3 +1,5 @@
+# https://a-hlebowicz.github.io/piaskownica/
+ 
  ![Piaskownica](cover.gif)
 
 Symulacja cząstek w stylu falling-sand z propagacją temperatury. Rust + WebAssembly, Canvas 2D.
