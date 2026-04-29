@@ -1,4 +1,4 @@
-import init, { Universe } from '../pkg/piaskownica.js';
+import init, { Universe } from './pkg/piaskownica.js';
 
 async function run() {
     //załaduj WASM
