@@ -1,5 +1,7 @@
 # Piaskownica
  
+![Piaskownica](cover.gif)
+
 Symulacja cząstek w stylu falling-sand z propagacją temperatury. Rust + WebAssembly, Canvas 2D.
  
 Każda komórka to cząsteczka z typem (piasek, woda, ogień, itd.) i temperaturą. Cząsteczki spadają, woda się rozlewa, ogień się rozprzestrzenia, lód topnieje. Temperatura propaguje się przez sąsiadów zgodnie z przewodnictwem cieplnym danego materiału. Użytkownik rysuje materiały myszą.
