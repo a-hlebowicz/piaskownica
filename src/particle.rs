@@ -33,8 +33,8 @@ impl CellType {
             CellType::Ice => (120, 255, 255, 255),
             CellType::Steam => (200, 210, 220, 255),
             CellType::Fire => (255, 140, 30, 255),
-            CellType::Oil => (10,10,10,255),
-            CellType::Cold => (0,0,200,255),
+            CellType::Oil => (10, 10, 10, 255),
+            CellType::Cold => (0, 0, 200, 255),
         }
     }
 
@@ -55,39 +55,39 @@ impl CellType {
         }
     }
     pub fn as_str(&self) -> &'static str {
-    match self {
-        CellType::Empty => "empty",
-        CellType::Sand => "sand",
-        CellType::Water => "water",
-        CellType::Stone => "stone",
-        CellType::Wood => "wood",
-        CellType::Lava => "lava",
-        CellType::Metal => "metal",
-        CellType::Ice => "ice",
-        CellType::Steam => "steam",
-        CellType::Fire => "fire",
-        CellType::Oil => "oil",
-        CellType::Cold => "cold",
+        match self {
+            CellType::Empty => "empty",
+            CellType::Sand => "sand",
+            CellType::Water => "water",
+            CellType::Stone => "stone",
+            CellType::Wood => "wood",
+            CellType::Lava => "lava",
+            CellType::Metal => "metal",
+            CellType::Ice => "ice",
+            CellType::Steam => "steam",
+            CellType::Fire => "fire",
+            CellType::Oil => "oil",
+            CellType::Cold => "cold",
+        }
     }
-}
 
-pub fn from_str(s: &str) -> Result<CellType, String> {
-    match s {
-        "empty" => Ok(CellType::Empty),
-        "sand" => Ok(CellType::Sand),
-        "water" => Ok(CellType::Water),
-        "stone" => Ok(CellType::Stone),
-        "wood" => Ok(CellType::Wood),
-        "lava" => Ok(CellType::Lava),
-        "metal" => Ok(CellType::Metal),
-        "ice" => Ok(CellType::Ice),
-        "steam" => Ok(CellType::Steam),
-        "fire" => Ok(CellType::Fire),
-        "oil" => Ok(CellType::Oil),
-        "cold" => Ok(CellType::Cold),
-        _ => Err(format!("Nieznany typ: {}", s)),
+    pub fn from_str(s: &str) -> Result<CellType, String> {
+        match s {
+            "empty" => Ok(CellType::Empty),
+            "sand" => Ok(CellType::Sand),
+            "water" => Ok(CellType::Water),
+            "stone" => Ok(CellType::Stone),
+            "wood" => Ok(CellType::Wood),
+            "lava" => Ok(CellType::Lava),
+            "metal" => Ok(CellType::Metal),
+            "ice" => Ok(CellType::Ice),
+            "steam" => Ok(CellType::Steam),
+            "fire" => Ok(CellType::Fire),
+            "oil" => Ok(CellType::Oil),
+            "cold" => Ok(CellType::Cold),
+            _ => Err(format!("Nieznany typ: {}", s)),
+        }
     }
-}
 }
 
 #[derive(Clone, Copy)]
@@ -168,21 +168,20 @@ impl Particle {
             temperature: 600,
         }
     }
-    pub fn new_oil()-> Particle{
-        Particle{
+    pub fn new_oil() -> Particle {
+        Particle {
             cell_type: CellType::Oil,
             has_moved: false,
             temperature: 20,
         }
     }
-    pub fn new_cold()-> Particle{
-        Particle{
+    pub fn new_cold() -> Particle {
+        Particle {
             cell_type: CellType::Cold,
             has_moved: false,
             temperature: -600,
         }
     }
-    
 }
 
 fn metal_glow(base: (u8, u8, u8, u8), temp: i16) -> (u8, u8, u8, u8) {
@@ -199,4 +198,3 @@ fn metal_glow(base: (u8, u8, u8, u8), temp: i16) -> (u8, u8, u8, u8) {
 
     (r, g, b, 255)
 }
-

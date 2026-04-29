@@ -40,7 +40,7 @@ impl Universe {
         physics::apply_temperature_effects(&mut self.grid);
     }
 
-    pub fn render(&mut self){
+    pub fn render(&mut self) {
         self.grid.render();
     }
 
@@ -83,7 +83,7 @@ impl Universe {
     pub fn export(&self) -> String {
         snapshot::export(&self.grid)
     }
-    
+
     pub fn import(&mut self, json: &str) -> Result<(), JsValue> {
         snapshot::import(&mut self.grid, json).map_err(|e| JsValue::from_str(&e))
     }
