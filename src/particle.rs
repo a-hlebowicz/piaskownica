@@ -10,6 +10,7 @@ pub enum CellType {
     Ice,
     Steam,
     Fire,
+    Oil,
 }
 impl CellType {
     pub fn color(&self, temperature: i16) -> (u8, u8, u8, u8) {
@@ -29,8 +30,9 @@ impl CellType {
             CellType::Lava => (255, 104, 0, 255),
             CellType::Metal => (140, 140, 150, 255),
             CellType::Ice => (120, 255, 255, 255),
-            CellType::Steam => (200, 210, 220, 200),
+            CellType::Steam => (200, 210, 220, 255),
             CellType::Fire => (255, 140, 30, 255),
+            CellType::Oil => (10,10,10,255),
         }
     }
 
@@ -46,6 +48,7 @@ impl CellType {
             CellType::Ice => 40,
             CellType::Steam => 30,
             CellType::Fire => 100,
+            CellType::Oil => 70,
         }
     }
 }
@@ -126,6 +129,13 @@ impl Particle {
             cell_type: CellType::Fire,
             has_moved: false,
             temperature: 600,
+        }
+    }
+    pub fn new_oil()-> Particle{
+        Particle{
+            cell_type: CellType::Oil,
+            has_moved: false,
+            temperature: 20,
         }
     }
 }

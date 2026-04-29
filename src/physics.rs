@@ -27,6 +27,7 @@ fn update_cell(grid: &mut Grid, x: usize, y: usize) {
         CellType::Lava => update_lava(grid, x, y),
         CellType::Steam => update_steam(grid, x, y),
         CellType::Fire => update_fire(grid, x, y),
+        CellType::Oil => update_oil(grid,x,y),
         _ => {}
     }
 }
@@ -69,6 +70,10 @@ fn update_water(grid: &mut Grid, x: usize, y: usize) {
 }
 
 fn update_lava(grid: &mut Grid, x: usize, y: usize) {
+    update_liquid(grid, x, y);
+}
+
+fn update_oil(grid: &mut Grid, x: usize, y:usize){
     update_liquid(grid, x, y);
 }
 
@@ -311,6 +316,7 @@ pub fn apply_temperature_effects(grid: &mut Grid) {
                     ignite_neighbors(grid, x, y);
                     Some(CellType::Fire)
                 },
+                (CellType::Oil,t ) if t >100 => Some(CellType::Fire),
                 _ => None,
             };
             if let Some(new) = new_type {

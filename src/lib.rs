@@ -87,6 +87,7 @@ fn material_to_particle(material: u8) -> Particle {
         7 => Particle::new_ice(),
         8 => Particle::new_steam(),
         9 => Particle::new_fire(),
+        10 => Particle::new_oil(),
         _ => Particle::new_empty(),
     }
 }
