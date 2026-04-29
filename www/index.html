@@ -28,5 +28,12 @@
         <p class="hint">Kliknij, żeby rysować</p>
         <script type="module" src="index.js"></script>
         <p id="debug" class="hint">(0, 0): 0°C</p>
+
+        <div id="snapshot-controls">
+            <button id="save-btn">Zapisz scenę</button>
+            <button id="load-btn">Wczytaj scenę</button>
+            <input type="file" id="load-input" accept=".json" style="display: none;">
+            <p id="snapshot-message" class="hint"></p>
+        </div>
     </body>
 </html>

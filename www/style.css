@@ -50,3 +50,37 @@ canvas {
     background: #4a4a6e;
     border-color: #888;
 }
+
+#snapshot-controls {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#snapshot-controls button {
+    background: #2a2a3e;
+    color: #eee;
+    border: 2px solid #444;
+    padding: 8px 16px;
+    font-family: monospace;
+    cursor: pointer;
+}
+
+#snapshot-controls button:hover {
+    background: #3a3a4e;
+    border-color: #666;
+}
+
+#snapshot-message {
+    margin: 0;
+    font-size: 14px;
+}
+
+#snapshot-message.error {
+    color: #ff6b6b;
+}
+
+#snapshot-message.success {
+    color: #6bff6b;
+}

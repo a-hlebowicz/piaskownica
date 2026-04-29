@@ -76,6 +76,14 @@ impl Universe {
             0
         }
     }
+
+    pub fn export(&self) -> String {
+        snapshot::export(&self.grid)
+    }
+    
+    pub fn import(&mut self, json: &str) -> Result<(), JsValue> {
+        snapshot::import(&mut self.grid, json).map_err(|e| JsValue::from_str(&e))
+    }
 }
 fn material_to_particle(material: u8) -> Particle {
     match material {

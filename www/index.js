@@ -59,35 +59,92 @@ async function run() {
         const temp = universe.debug_at(x, y);
         document.getElementById('debug').innerText = `(${x}, ${y}): ${temp}°C`;
     });
+    
+    const saveBtn = document.getElementById('save-btn');
+    const loadBtn = document.getElementById('load-btn');
+    const loadInput = document.getElementById('load-input');
+    const snapshotMessage = document.getElementById('snapshot-message');
 
-    function gameLoop() {
-    if (mouseDown) {
-        if (lastDrawX === -1) {
-            universe.draw(lastX, lastY, currentMaterial);
-        } else {
-            universe.draw_line(lastDrawX, lastDrawY, lastX, lastY, currentMaterial);
-        }
-        lastDrawX = lastX;
-        lastDrawY = lastY;
+    function showMessage(text, type) {
+        snapshotMessage.textContent = text;
+        snapshotMessage.className = 'hint ' + type;
+        setTimeout(() => {
+            snapshotMessage.textContent = '';
+            snapshotMessage.className = 'hint';
+        }, 3000);
     }
 
-    universe.tick();
+    saveBtn.addEventListener('click', () => {
+        const json = universe.export();
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        
+        const now = new Date();
+        const timestamp = now.toISOString().slice(0, 19).replace(/:/g, '-');
+        a.download = `piaskownica-${timestamp}.json`;
+        
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        showMessage('Zapisano!', 'success');
+    });
 
-    const pixelsPtr = universe.pixels_ptr();
-    const pixels = new Uint8ClampedArray(
-        wasm.memory.buffer,
-        pixelsPtr,
-        width * height * 4
-    );
-    const imageData = new ImageData(pixels, width, height);
+    loadBtn.addEventListener('click', () => {
+        loadInput.click();
+    });
 
-    ctx.putImageData(imageData, 0, 0);
-    ctx.drawImage(canvas, 0, 0, width, height, 0, 0, width * scale, height * scale);
+    loadInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const json = e.target.result;
+            try {
+                universe.import(json);
+                showMessage('Wczytano!', 'success');
+            } catch (err) {
+                showMessage('Błąd: ' + err, 'error');
+            }
+        };
+        reader.readAsText(file);
+        
+        loadInput.value = '';
+    });
 
-    requestAnimationFrame(gameLoop);
-}
+    function gameLoop() {
+        if (mouseDown) {
+            if (lastDrawX === -1) {
+                universe.draw(lastX, lastY, currentMaterial);
+            } else {
+                universe.draw_line(lastDrawX, lastDrawY, lastX, lastY, currentMaterial);
+            }
+            lastDrawX = lastX;
+            lastDrawY = lastY;
+        }
+
+        universe.tick();
+
+        const pixelsPtr = universe.pixels_ptr();
+        const pixels = new Uint8ClampedArray(
+            wasm.memory.buffer,
+            pixelsPtr,
+            width * height * 4
+        );
+        const imageData = new ImageData(pixels, width, height);
+
+        ctx.putImageData(imageData, 0, 0);
+        ctx.drawImage(canvas, 0, 0, width, height, 0, 0, width * scale, height * scale);
+
+        requestAnimationFrame(gameLoop);
+    }
 
     gameLoop(); 
 }
+
+   
 
 run();
