@@ -332,7 +332,7 @@ pub fn apply_temperature_effects(grid: &mut Grid) {
                     ignite_neighbors(grid, x, y);
                     Some(CellType::Fire)
                 }
-                (CellType::Oil, t) if t > 100 => Some(CellType::Fire),
+                (CellType::Oil, t) if t > 110 => Some(CellType::Fire),
                 (CellType::Cold, t) if t > -300 => Some(CellType::Empty),
                 _ => None,
             };

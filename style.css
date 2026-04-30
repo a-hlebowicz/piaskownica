@@ -1,86 +1,290 @@
-body {
-    background: #1a1a2e;
-    color: #eee;
-    font-family: monospace;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0;
-    padding: 20px;
+/* =========================================================
+  Plik napisany z pomocą claude.ai :) 
+   ========================================================= */
+
+/* ---------- Tokens ---------- */
+:root {
+  --bg:        #050505;   /* tło strony — prawie czerń */
+  --panel:     #0d0d0d;   /* panele */
+  --panel-2:   #161616;   /* hover */
+  --panel-3:   #1f1f1f;   /* aktywne */
+  --line:      #262626;   /* ramki */
+
+  --fg:        #ededed;
+  --fg-dim:    #8a8a8a;
+  --fg-mute:   #555555;
+
+  --accent:    #ffe400;
+  --accent-fg: #050505;
+
+  --danger:    #e85d5d;
+  --success:   #6fcf6f;
+
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Menlo", "Consolas", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --gap: 12px;
 }
 
-h1 {
-    margin-bottom: 20px;
+/* ---------- Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.4;
+  min-height: 100vh;
 }
 
-canvas {
-    border: 2px solid #444;
-    cursor: crosshair;
-    image-rendering: pixelated;  /* ostre piksele, nie rozmyte */
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
 }
 
-.hint {
-    margin-top: 15px;
-    opacity: 0.6;
-    font-size: 14px;
+h1, h2, p, ul { margin: 0; padding: 0; }
+ul { list-style: none; }
+
+/* ---------- App shell ----------
+   Grid 2-column: sidebar | stage.
+   Stage = canvas + footer statusbar pod nim. */
+.app {
+  min-height: 100vh;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--gap);
+  align-items: stretch;
 }
 
-#materials {
-    margin-bottom: 15px;
-    display: flex;
-    gap: 10px;
+@media (max-width: 1500px) {
+  .app { grid-template-columns: 220px 1fr; padding: 12px; gap: 10px; }
+}
+
+/* ---------- Sidebar ----------
+   Grid: tytuł / materiały (rośnie) / akcje (przyklejone do dołu). */
+.sidebar {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--gap);
+  min-width: 0;
+  min-height: 0;
+}
+
+.app-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+  padding: 4px 4px 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.app-title-version {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  text-transform: lowercase;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--fg-mute);
+  text-transform: uppercase;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+/* ---------- Material list ---------- */
+.material-list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .material-btn {
-    background: #2a2a3e;
-    color: #eee;
-    border: 2px solid #444;
-    padding: 8px 16px;
-    font-family: monospace;
-    cursor: pointer;
-    transition: all 0.1s;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  color: var(--fg-dim);
+  font-family: var(--sans);
+  font-size: 13px;
+  text-align: left;
+  border-left: 2px solid transparent;
+  transition: background-color 80ms linear;
 }
 
+.material-btn .swatch {
+  width: 10px;
+  height: 10px;
+  background: var(--mat, var(--fg-mute));
+  flex-shrink: 0;
+}
+
+.material-btn .mat-name { flex: 1; min-width: 0; }
+
 .material-btn:hover {
-    background: #3a3a4e;
-    border-color: #666;
+  background: var(--panel-2);
+  color: var(--fg);
 }
 
 .material-btn.active {
-    background: #4a4a6e;
-    border-color: #888;
+  background: var(--panel-3);
+  color: var(--accent);
+  border-left-color: var(--accent);
 }
 
-#snapshot-controls {
-    margin-bottom: 15px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
+.swatch-eraser {
+  background:
+    linear-gradient(45deg, transparent 45%, var(--fg-mute) 45%, var(--fg-mute) 55%, transparent 55%);
 }
 
-#snapshot-controls button {
-    background: #2a2a3e;
-    color: #eee;
-    border: 2px solid #444;
-    padding: 8px 16px;
-    font-family: monospace;
-    cursor: pointer;
+.swatch-bordered {
+  outline: 1px solid var(--fg-mute);
+  outline-offset: -1px;
 }
 
-#snapshot-controls button:hover {
-    background: #3a3a4e;
-    border-color: #666;
+/* ---------- Action list ---------- */
+.action-list {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
 }
 
-#snapshot-message {
-    margin: 0;
-    font-size: 14px;
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  color: var(--fg);
+  font-family: var(--sans);
+  font-size: 13px;
+  text-align: left;
+  transition: background-color 80ms linear;
 }
 
-#snapshot-message.error {
-    color: #ff6b6b;
+.action-btn .glyph {
+  width: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--fg-mute);
+  text-align: center;
 }
 
-#snapshot-message.success {
-    color: #6bff6b;
+.action-btn:hover { background: var(--panel-2); }
+.action-btn:hover .glyph { color: var(--accent); }
+
+.action-btn.is-paused { color: var(--accent); }
+.action-btn.is-paused .glyph { color: var(--accent); }
+
+.action-btn.action-danger:hover .glyph { color: var(--danger); }
+
+/* ---------- Status message ---------- */
+.status-msg {
+  margin: 0;
+  padding: 6px 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--fg-dim);
+  border-top: 1px solid var(--line);
+  min-height: 25px;
+}
+.status-msg:empty { visibility: hidden; }
+.status-msg.status-msg-success,
+.status-msg.success { color: var(--success); }
+.status-msg.status-msg-error,
+.status-msg.error   { color: var(--danger);  }
+
+/* ---------- Stage ----------
+   Canvas + statusbar jako footer. Statusbar wyrównany do dołu. */
+.stage {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: var(--gap);
+  min-width: 0;
+  min-height: 0;
+}
+
+.canvas-wrap {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* CANVAS — bez box-shadow, bez transition, bez filter. */
+#canvas {
+  display: block;
+  background: #000;
+  cursor: crosshair;
+  image-rendering: pixelated;
+  outline: 1px solid var(--line);
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* ---------- Statusbar (footer) ---------- */
+.statusbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--fg-dim);
+}
+.status-cell { display: inline-flex; gap: 6px; align-items: baseline; }
+.status-k { color: var(--fg-mute); text-transform: uppercase; letter-spacing: 0.08em; font-size: 10px; }
+.status-v { color: var(--fg); }
+
+.hint {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--fg-mute);
+}
+
+/* ---------- Focus ---------- */
+:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0ms !important; }
 }

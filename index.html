@@ -7,34 +7,55 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <h1>Piaskownica</h1>
+        <div class="app">
 
-        <div id="materials">
-            <button class="material-btn active" data-material="1">Piasek</button>
-            <button class="material-btn" data-material="2">Woda</button>
-            <button class="material-btn" data-material="3">Kamień</button>
-            <button class="material-btn" data-material="4">Drewno</button>
-            <button class="material-btn" data-material="5">Lawa</button>
-            <button class="material-btn" data-material="6">Metal</button>
-            <button class="material-btn" data-material="7">Lód</button>
-            <button class="material-btn" data-material="8">Para</button>
-            <button class="material-btn" data-material="9">Ogień</button>
-            <button class="material-btn" data-material="10">Olej</button>
-            <button class="material-btn" data-material="11">Zimno</button>
-            <button class="material-btn" data-material="0">Nic</button>
+            <aside class="sidebar">
+                <h1 class="app-title"><span>Piaskownica</span><span class="app-title-version">v1.0.0</span></h1>
+
+                <section class="panel">
+                    <h2 class="panel-title">Materiały</h2>
+                    <ul class="material-list" id="materials">
+                        <li><button class="material-btn active" data-material="1"  style="--mat:#ffe400"><span class="swatch"></span><span class="mat-name">Piasek</span></button></li>
+                        <li><button class="material-btn"        data-material="2"  style="--mat:#2fbeff"><span class="swatch"></span><span class="mat-name">Woda</span></button></li>
+                        <li><button class="material-btn"        data-material="3"  style="--mat:#aba4a4"><span class="swatch"></span><span class="mat-name">Kamień</span></button></li>
+                        <li><button class="material-btn"        data-material="4"  style="--mat:#854a1e"><span class="swatch"></span><span class="mat-name">Drewno</span></button></li>
+                        <li><button class="material-btn"        data-material="5"  style="--mat:#ff6800"><span class="swatch"></span><span class="mat-name">Lawa</span></button></li>
+                        <li><button class="material-btn"        data-material="6"  style="--mat:#8c8c96"><span class="swatch"></span><span class="mat-name">Metal</span></button></li>
+                        <li><button class="material-btn"        data-material="7"  style="--mat:#78ffff"><span class="swatch"></span><span class="mat-name">Lód</span></button></li>
+                        <li><button class="material-btn"        data-material="8"  style="--mat:#c8d2dc"><span class="swatch"></span><span class="mat-name">Para</span></button></li>
+                        <li><button class="material-btn"        data-material="9"  style="--mat:#ff8c1e"><span class="swatch"></span><span class="mat-name">Ogień</span></button></li>
+                        <li><button class="material-btn"        data-material="10" style="--mat:#281e15"><span class="swatch swatch-bordered"></span><span class="mat-name">Olej</span></button></li>
+                        <li><button class="material-btn"        data-material="11" style="--mat:#0000c8"><span class="swatch"></span><span class="mat-name">Zimno</span></button></li>
+                        <li><button class="material-btn"        data-material="0"><span class="swatch swatch-eraser"></span><span class="mat-name">Nic</span></button></li>
+                    </ul>
+                </section>
+
+                <section class="panel">
+                    <h2 class="panel-title">Akcje</h2>
+                    <div class="action-list" id="snapshot-controls">
+                        <button id="pause-btn" class="action-btn"><span class="glyph">||</span><span>Pauza</span></button>
+                        <button id="save-btn"  class="action-btn"><span class="glyph">↓</span><span>Zapisz</span></button>
+                        <button id="load-btn"  class="action-btn"><span class="glyph">↑</span><span>Wczytaj</span></button>
+                        <button id="clear-btn" class="action-btn action-danger"><span class="glyph">×</span><span>Wyczyść</span></button>
+                    </div>
+                    <input type="file" id="load-input" accept=".json" style="display:none">
+                    <p id="snapshot-message" class="status-msg"></p>
+                </section>
+            </aside>
+
+            <section class="stage">
+                <div class="canvas-wrap">
+                    <canvas id="canvas"></canvas>
+                </div>
+                <footer class="statusbar">
+                    <span class="status-cell">
+                        <span class="status-k">Kursor</span>
+                        <span class="status-v" id="debug">(0, 0): 0°C</span>
+                    </span>
+                </footer>
+            </section>
+
         </div>
-
-        <canvas id="canvas"></canvas>
-        <p class="hint">Kliknij, żeby rysować</p>
         <script type="module" src="index.js"></script>
-        <p id="debug" class="hint">(0, 0): 0°C</p>
-
-        <div id="snapshot-controls">
-            <button id="pause-btn">⏸ Pauza</button>
-            <button id="save-btn">Zapisz scenę</button>
-            <button id="load-btn">Wczytaj scenę</button>
-            <input type="file" id="load-input" accept=".json" style="display: none;">
-            <p id="snapshot-message" class="hint"></p>
-        </div>
     </body>
 </html>

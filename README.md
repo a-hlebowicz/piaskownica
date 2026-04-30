@@ -39,6 +39,8 @@ Ogień ma wbudowane pasywne chłodzenie - traci 1-5°C/tick niezależnie od sąs
 - `wasm-bindgen` + `wasm-pack` (kompilacja do WASM)
 - Vanilla JavaScript (ładowanie WASM, game loop, obsługa myszy, rysowanie na canvas)
 - HTML5 Canvas 2D
+- CSS wygenerowany przez Claude
+
 ## architektura
  
 Siatka to `Vec<Particle>` o rozmiarze `width * height`, indeks `y * width + x`. Bufor pikseli to osobny `Vec<u8>` (RGBA). JS czyta bufor bezpośrednio z pamięci WASM przez wskaźnik.

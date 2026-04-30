@@ -123,6 +123,12 @@ async function run() {
         pauseBtn.textContent = paused ? '▶ Wznów' : '⏸ Pauza';
     });
 
+    const clearBtn = document.getElementById('clear-btn');
+    clearBtn.addEventListener('click', () => {
+        universe.clear();
+        showMessage('Wyczyszczono', 'success');
+    });
+
     function gameLoop() {
         if (mouseDown) {
             if (lastDrawX === -1) {

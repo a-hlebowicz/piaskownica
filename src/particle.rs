@@ -23,7 +23,7 @@ impl CellType {
     }
     pub fn base_color(&self) -> (u8, u8, u8, u8) {
         match self {
-            CellType::Empty => (40, 40, 40, 255),
+            CellType::Empty => (13, 13, 13, 255),
             CellType::Sand => (255, 228, 0, 255),
             CellType::Water => (47, 190, 255, 255),
             CellType::Stone => (171, 164, 164, 255),
@@ -33,7 +33,7 @@ impl CellType {
             CellType::Ice => (120, 255, 255, 255),
             CellType::Steam => (200, 210, 220, 255),
             CellType::Fire => (255, 140, 30, 255),
-            CellType::Oil => (10, 10, 10, 255),
+            CellType::Oil => (40, 30, 21, 255),
             CellType::Cold => (0, 0, 200, 255),
         }
     }
