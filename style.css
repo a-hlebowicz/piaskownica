@@ -1,32 +1,31 @@
 /* =========================================================
   Plik napisany z pomocą claude.ai :) 
    ========================================================= */
-
-/* ---------- Tokens ---------- */
 :root {
-  --bg:        #050505;   /* tło strony — prawie czerń */
-  --panel:     #0d0d0d;   /* panele */
-  --panel-2:   #161616;   /* hover */
-  --panel-3:   #1f1f1f;   /* aktywne */
-  --line:      #262626;   /* ramki */
+  --bg:        #0a0a0a;
+  --panel:     #141414;
+  --panel-2:   #1f1f1f;
+  --panel-3:   #222222;
+  --line:      #383838;
 
   --fg:        #ededed;
   --fg-dim:    #8a8a8a;
   --fg-mute:   #555555;
 
+
   --accent:    #ffe400;
   --accent-fg: #050505;
 
-  --danger:    #e85d5d;
+  --danger:    #d65d5d;
   --success:   #6fcf6f;
 
-  --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Menlo", "Consolas", monospace;
-  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-pixel: "VT323", ui-monospace, "Menlo", "Consolas", monospace;
+  --font-mono:  ui-monospace, "SF Mono", "Cascadia Mono", "Menlo", monospace;
 
-  --gap: 12px;
+  /* Grid jednostka — wszystko jest wielokrotnością 4px. */
+  --u: 4px;
 }
 
-/* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 
 html, body {
@@ -34,9 +33,10 @@ html, body {
   padding: 0;
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--sans);
-  font-size: 13px;
-  line-height: 1.4;
+  font-family: var(--font-pixel);
+  /* VT323 jest niewielkie metrycznie — 20px daje czytelne ~14px x-height */
+  font-size: 20px;
+  line-height: 1;
   min-height: 100vh;
 }
 
@@ -52,72 +52,80 @@ button {
 h1, h2, p, ul { margin: 0; padding: 0; }
 ul { list-style: none; }
 
-/* ---------- App shell ----------
-   Grid 2-column: sidebar | stage.
-   Stage = canvas + footer statusbar pod nim. */
+/* ---------- App shell ---------- */
 .app {
   min-height: 100vh;
-  padding: 16px;
+  /* Padding wielokrotność 4 */
+  padding: calc(var(--u) * 3);
   display: grid;
   grid-template-columns: 240px 1fr;
-  gap: var(--gap);
+  gap: calc(var(--u) * 3);
   align-items: stretch;
 }
 
 @media (max-width: 1500px) {
-  .app { grid-template-columns: 220px 1fr; padding: 12px; gap: 10px; }
+  .app {
+    grid-template-columns: 220px 1fr;
+    padding: calc(var(--u) * 2);
+    gap: calc(var(--u) * 2);
+  }
 }
 
-/* ---------- Sidebar ----------
-   Grid: tytuł / materiały (rośnie) / akcje (przyklejone do dołu). */
+/* ---------- Sidebar ---------- */
 .sidebar {
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: var(--gap);
+  gap: calc(var(--u) * 3);
   min-width: 0;
   min-height: 0;
 }
 
+/* Tytuł — bez ramki box-shadow, żeby nie zjadał miejsca pod nim */
 .app-title {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 8px;
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: var(--fg-dim);
+  gap: calc(var(--u) * 2);
+  padding: calc(var(--u) * 2) calc(var(--u) * 3);
+  background: var(--panel);
+  /* Pixelowa ramka 4px po wszystkich stronach */
+  box-shadow: 0 0 0 var(--u) var(--panel-3);
+  /* Marginesem oddychamy box-shadow od sąsiadów */
+  margin: var(--u);
+  font-size: 24px;
+  color: var(--fg);
   text-transform: uppercase;
-  padding: 4px 4px 8px;
-  border-bottom: 1px solid var(--line);
+  letter-spacing: 0.04em;
 }
 
 .app-title-version {
-  font-size: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--accent);
   text-transform: lowercase;
 }
 
+/* Panele — ramka 4px box-shadow */
 .panel {
   background: var(--panel);
-  border: 1px solid var(--line);
+  box-shadow: 0 0 0 var(--u) var(--panel-3);
+  margin: var(--u);
   min-height: 0;
   display: flex;
   flex-direction: column;
 }
 
 .panel-title {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  padding: calc(var(--u) * 2) calc(var(--u) * 3);
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  letter-spacing: 0.12em;
   color: var(--fg-mute);
   text-transform: uppercase;
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--line);
+  /* Wewnętrzny separator — też 4px */
+  box-shadow: inset 0 calc(var(--u) * -1) 0 var(--panel-3);
   flex-shrink: 0;
 }
 
@@ -125,32 +133,40 @@ ul { list-style: none; }
 .material-list {
   display: flex;
   flex-direction: column;
+  padding: var(--u) 0;
   overflow-y: auto;
   min-height: 0;
 }
 
 .material-btn {
+  position: relative;
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 12px;
+  gap: calc(var(--u) * 2);
+  /* Lewy padding zostawia miejsce na pixelowy kursor 4×4 */
+  padding: var(--u) calc(var(--u) * 3) var(--u) calc(var(--u) * 4);
   color: var(--fg-dim);
-  font-family: var(--sans);
-  font-size: 13px;
+  font-family: var(--font-pixel);
+  font-size: 20px;
   text-align: left;
-  border-left: 2px solid transparent;
+  /* Tylko background-color w transition — najlżejsze */
   transition: background-color 80ms linear;
 }
 
 .material-btn .swatch {
-  width: 10px;
-  height: 10px;
+  width: calc(var(--u) * 3);
+  height: calc(var(--u) * 3);
   background: var(--mat, var(--fg-mute));
+  /* Wewnętrzna ramka 2px ciemnym, żeby swatch wyglądał "obrobiony" */
+  box-shadow: inset 0 0 0 2px var(--bg);
   flex-shrink: 0;
 }
 
-.material-btn .mat-name { flex: 1; min-width: 0; }
+.material-btn .mat-name {
+  flex: 1;
+  min-width: 0;
+}
 
 .material-btn:hover {
   background: var(--panel-2);
@@ -160,63 +176,147 @@ ul { list-style: none; }
 .material-btn.active {
   background: var(--panel-3);
   color: var(--accent);
-  border-left-color: var(--accent);
 }
 
+/* Pixelowy kursor 4×4 po lewej aktywnego materiału */
+.material-btn.active::before {
+  content: "";
+  position: absolute;
+  left: var(--u);
+  top: 50%;
+  width: var(--u);
+  height: var(--u);
+  background: var(--accent);
+  transform: translateY(-50%);
+}
+
+/* Olej ma kolor prawie identyczny z panelem — daj swatchowi widoczną ramkę */
+.swatch-bordered {
+  box-shadow:
+    inset 0 0 0 2px var(--bg),
+    0 0 0 1px var(--fg-mute);
+}
+
+/* Eraser — diagonalny dash */
 .swatch-eraser {
   background:
     linear-gradient(45deg, transparent 45%, var(--fg-mute) 45%, var(--fg-mute) 55%, transparent 55%);
-}
-
-.swatch-bordered {
-  outline: 1px solid var(--fg-mute);
-  outline-offset: -1px;
+  box-shadow: inset 0 0 0 2px var(--bg);
 }
 
 /* ---------- Action list ---------- */
 .action-list {
   display: flex;
   flex-direction: column;
-  padding: 6px 0;
+  padding: var(--u) 0;
 }
 
 .action-btn {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 7px 12px;
+  gap: calc(var(--u) * 2);
+  padding: var(--u) calc(var(--u) * 3);
   color: var(--fg);
-  font-family: var(--sans);
-  font-size: 13px;
+  font-family: var(--font-pixel);
+  font-size: 20px;
   text-align: left;
   transition: background-color 80ms linear;
 }
 
+/* Glify rysowane jako bloki 12×12 z linear-gradient — bez fontów */
 .action-btn .glyph {
-  width: 12px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--fg-mute);
-  text-align: center;
+  width: calc(var(--u) * 3);
+  height: calc(var(--u) * 3);
+  flex-shrink: 0;
+  background-color: transparent;
+}
+
+/* Pauza: dwa pionowe pasy */
+#pause-btn .glyph,
+.action-btn.glyph-pause .glyph {
+  background:
+    linear-gradient(to right,
+      var(--fg-dim) 0 33%,
+      transparent 33% 67%,
+      var(--fg-dim) 67% 100%);
+}
+
+/* Zapisz: strzałka w dół (bloki) */
+#save-btn .glyph,
+.action-btn.glyph-save .glyph {
+  background:
+    linear-gradient(var(--fg-dim), var(--fg-dim)) center top    / 4px 4px no-repeat,
+    linear-gradient(var(--fg-dim), var(--fg-dim)) center 4px    / 12px 4px no-repeat,
+    linear-gradient(var(--fg-dim), var(--fg-dim)) center bottom / 8px 4px no-repeat;
+}
+
+/* Wczytaj: strzałka w górę */
+#load-btn .glyph,
+.action-btn.glyph-load .glyph {
+  background:
+    linear-gradient(var(--fg-dim), var(--fg-dim)) center top    / 8px 4px no-repeat,
+    linear-gradient(var(--fg-dim), var(--fg-dim)) center 4px    / 12px 4px no-repeat,
+    linear-gradient(var(--fg-dim), var(--fg-dim)) center bottom / 4px 4px no-repeat;
+}
+
+/* Wyczyść: krzyżyk */
+#clear-btn .glyph,
+.action-btn.glyph-clear .glyph {
+  background:
+    linear-gradient(45deg, transparent 40%, var(--danger) 40% 60%, transparent 60%),
+    linear-gradient(-45deg, transparent 40%, var(--danger) 40% 60%, transparent 60%);
 }
 
 .action-btn:hover { background: var(--panel-2); }
-.action-btn:hover .glyph { color: var(--accent); }
 
-.action-btn.is-paused { color: var(--accent); }
-.action-btn.is-paused .glyph { color: var(--accent); }
+/* Hover rozjaśnia glify — zmienia "kolor pikseli" przez zmianę tła gradientu.
+   Najtańszy sposób: nadpisujemy poprzez bardziej kontrastową paletę. */
+.action-btn:hover #pause-btn,
+.action-btn:hover #save-btn,
+.action-btn:hover #load-btn { /* not used directly — patrz poniżej */ }
 
-.action-btn.action-danger:hover .glyph { color: var(--danger); }
+#pause-btn:hover .glyph,
+.glyph-pause:hover .glyph {
+  background:
+    linear-gradient(to right,
+      var(--accent) 0 33%,
+      transparent 33% 67%,
+      var(--accent) 67% 100%);
+}
+#save-btn:hover .glyph {
+  background:
+    linear-gradient(var(--accent), var(--accent)) center top    / 4px 4px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) center 4px    / 12px 4px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) center bottom / 8px 4px no-repeat;
+}
+#load-btn:hover .glyph {
+  background:
+    linear-gradient(var(--accent), var(--accent)) center top    / 8px 4px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) center 4px    / 12px 4px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) center bottom / 4px 4px no-repeat;
+}
+
+.action-btn.is-paused {
+  color: var(--accent);
+  background: var(--panel-3);
+}
+.action-btn.is-paused .glyph {
+  background:
+    linear-gradient(to right,
+      var(--accent) 0 33%,
+      transparent 33% 67%,
+      var(--accent) 67% 100%);
+}
 
 /* ---------- Status message ---------- */
 .status-msg {
   margin: 0;
-  padding: 6px 12px;
-  font-family: var(--mono);
+  padding: var(--u) calc(var(--u) * 3);
+  font-family: var(--font-mono);
   font-size: 11px;
   color: var(--fg-dim);
-  border-top: 1px solid var(--line);
-  min-height: 25px;
+  box-shadow: inset 0 var(--u) 0 var(--panel-3);
+  min-height: calc(var(--u) * 6);
 }
 .status-msg:empty { visibility: hidden; }
 .status-msg.status-msg-success,
@@ -224,20 +324,21 @@ ul { list-style: none; }
 .status-msg.status-msg-error,
 .status-msg.error   { color: var(--danger);  }
 
-/* ---------- Stage ----------
-   Canvas + statusbar jako footer. Statusbar wyrównany do dołu. */
+/* ---------- Stage ---------- */
 .stage {
   display: grid;
   grid-template-rows: 1fr auto;
-  gap: var(--gap);
+  gap: calc(var(--u) * 3);
   min-width: 0;
   min-height: 0;
 }
 
 .canvas-wrap {
   background: var(--panel);
-  border: 1px solid var(--line);
-  padding: 16px;
+  /* Ramka 4px w stylu pixel-art */
+  box-shadow: 0 0 0 var(--u) var(--panel-3);
+  margin: var(--u);
+  padding: calc(var(--u) * 4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -245,43 +346,58 @@ ul { list-style: none; }
   overflow: hidden;
 }
 
-/* CANVAS — bez box-shadow, bez transition, bez filter. */
+/* CANVAS — bez box-shadow, bez transition, bez filter.
+   Tylko 1px outline w kolorze ramek paneli, żeby było widać krawędź.
+   Outline nie wpływa na layout i nie wymusza repaintu sąsiadów. */
 #canvas {
   display: block;
-  background: #000;
+  background: #0d0d0d;
   cursor: crosshair;
   image-rendering: pixelated;
-  outline: 1px solid var(--line);
+  outline: 2px solid var(--panel-3);
   max-width: 100%;
   max-height: 100%;
 }
 
-/* ---------- Statusbar (footer) ---------- */
+/* ---------- Statusbar ---------- */
 .statusbar {
+  background: var(--panel);
+  box-shadow: 0 0 0 var(--u) var(--panel-3);
+  margin: var(--u);
+  padding: calc(var(--u) * 2) calc(var(--u) * 3);
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 8px 12px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  font-family: var(--mono);
-  font-size: 11px;
+  gap: calc(var(--u) * 4);
+  font-family: var(--font-pixel);
+  font-size: 18px;
   color: var(--fg-dim);
 }
-.status-cell { display: inline-flex; gap: 6px; align-items: baseline; }
-.status-k { color: var(--fg-mute); text-transform: uppercase; letter-spacing: 0.08em; font-size: 10px; }
+
+.status-cell {
+  display: inline-flex;
+  gap: calc(var(--u) * 2);
+  align-items: baseline;
+}
+
+.status-k {
+  color: var(--fg-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 16px;
+}
+
 .status-v { color: var(--fg); }
 
 .hint {
-  font-family: var(--mono);
+  font-family: var(--font-mono);
   font-size: 11px;
   color: var(--fg-mute);
 }
 
 /* ---------- Focus ---------- */
 :focus-visible {
-  outline: 1px solid var(--accent);
-  outline-offset: -1px;
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 /* ---------- Reduced motion ---------- */
