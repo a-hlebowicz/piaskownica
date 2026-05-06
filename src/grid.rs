@@ -102,7 +102,9 @@ impl Grid {
         // pomocnicza funkcja do ustawienia piksela z bounds check
         let set_pixel = |grid: &mut Grid, x: i32, y: i32| {
             if x >= 0 && y >= 0 && (x as usize) < grid.width && (y as usize) < grid.height {
-                grid.set(x as usize, y as usize, particle);
+                if grid.get(x as usize, y as usize).cell_type==CellType::Empty{
+                    grid.set(x as usize, y as usize, particle);
+                }
             }
         };
 
