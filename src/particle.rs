@@ -54,6 +54,11 @@ impl CellType {
             CellType::Cold => 100,
         }
     }
+    
+    pub fn is_liquid(&self) -> bool {
+        matches!(self, CellType::Water | CellType::Lava | CellType::Oil)
+    }
+
     pub fn as_str(&self) -> &'static str {
         match self {
             CellType::Empty => "empty",

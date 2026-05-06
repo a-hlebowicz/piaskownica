@@ -43,8 +43,15 @@ fn update_sand(grid: &mut Grid, x: usize, y: usize) {
         CellType::Water,
         CellType::Lava,
         CellType::Steam,
+        CellType::Oil,
     ]; //nie wiem jak to ładniej nazwać
 
+    let has_sand_above = y > 0 && grid.get(x, y-1).cell_type == CellType::Sand;
+    let liquid_below = grid.get(x, y+1).cell_type.is_liquid();
+    if has_sand_above && liquid_below {
+        try_displace_liquid(grid, x, y+1);
+    }
+    
     if try_swap(grid, x, y, DOWN, &lighter_than) {
         return;
     }
@@ -120,7 +127,23 @@ fn update_fire(grid: &mut Grid, x: usize, y: usize) {
         try_swap(grid, x, y, dir, &lighter_than);
     }
 }
-
+fn try_displace_liquid(grid: &mut Grid, x: usize, y: usize) {
+    let mut candidates: Vec<(i32, i32)> = Vec::new();
+    let allowed = [CellType::Empty];
+    if can_swap(grid, x, y, UP_LEFT, &allowed) {
+        candidates.push(UP_LEFT);
+    }
+    if can_swap(grid, x, y, UP_RIGHT, &allowed) {
+        candidates.push(UP_RIGHT);
+    }
+    
+    if let Some(&dir) = fastrand::choice(&candidates) {
+        let (dx, dy) = dir;
+        let tx = (x as i32 + dx) as usize;
+        let ty = (y as i32 + dy) as usize;
+        grid.swap(x, y, tx, ty);
+    }
+}
 fn update_liquid(grid: &mut Grid, x: usize, y: usize, lighter_than: &[CellType]) {
     if y + 1 >= grid.height {
         return;
