@@ -368,8 +368,16 @@ pub fn apply_temperature_effects(grid: &mut Grid) {
                     CellType::Fire => Particle::new_fire(),
                     _ => Particle::new_empty(),
                 };
-                if !matches!(new, CellType::Fire) {
-                    new_cell.temperature = cell.temperature;
+                match new {
+                    CellType::Fire => {
+                    //nic nie rob
+                    }
+                    CellType::Empty => {
+                        new_cell.temperature = 20;
+                    }
+                    _ => {
+                        new_cell.temperature = cell.temperature;
+                    }
                 }
                 grid.set(x, y, new_cell);
             }
