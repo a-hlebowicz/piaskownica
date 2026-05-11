@@ -145,13 +145,8 @@ async function run() {
         let elapsed = now - lastTime;
         lastTime = now;
 
-        // zabezpieczenie przed "spiral of death":
-        // jeśli karta przegrzała się i lecimy 5 sekund, nie próbuj nadrobić 300 tików
         if (elapsed > 250) elapsed = 250;
-
         accumulator += elapsed;
-
-        // 1. Input
         if (mouseDown) {
             if (lastDrawX === -1) {
                 universe.draw(lastX, lastY, currentMaterial);
@@ -161,8 +156,6 @@ async function run() {
             lastDrawX = lastX;
             lastDrawY = lastY;
         }
-
-        // 2. Fizyka: tyle tików ile trzeba żeby nadrobić, ale stałe DT
         if (!paused) {
             while (accumulator >= PHYSICS_DT_MS) {
                 const t1 = performance.now();
@@ -172,10 +165,9 @@ async function run() {
                 accumulator -= PHYSICS_DT_MS;
             }
         } else {
-            accumulator = 0;  // reset gdy pauza, żeby po wyjściu nie nadrabiać
+            accumulator = 0; 
         }
 
-        // 3. Render (zawsze raz na klatkę monitora)
         const r1 = performance.now();
         universe.render();
         const pixelsPtr = universe.pixels_ptr();
@@ -186,7 +178,6 @@ async function run() {
         const r2 = performance.now();
         renderTimes.push(r2 - r1);
 
-        // 4. Pomiar
         if (tickTimes.length >= 60) {
             const avgTick = tickTimes.reduce((a, b) => a + b, 0) / tickTimes.length;
             const avgRender = renderTimes.reduce((a, b) => a + b, 0) / renderTimes.length;
