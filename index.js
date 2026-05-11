@@ -8,6 +8,10 @@ async function run() {
     const height = 150;
     const scale = 4;  // każdy piksel symulacji = 4x4 piksele ekranu
 
+    let lastTime = performance.now();
+    let frames = 0;
+    let fps = 0;
+
     const universe = Universe.new(width, height);
 
     let currentMaterial = 1; 
@@ -129,7 +133,11 @@ async function run() {
         showMessage('Wyczyszczono', 'success');
     });
 
+    let tickTimes = [];
+    let renderTimes = [];
+
     function gameLoop() {
+        // 1. Input (rysowanie myszą)
         if (mouseDown) {
             if (lastDrawX === -1) {
                 universe.draw(lastX, lastY, currentMaterial);
@@ -140,11 +148,17 @@ async function run() {
             lastDrawY = lastY;
         }
 
+        // 2. Symulacja (z pomiarem)
         if (!paused) {
+            const t1 = performance.now();
             universe.tick();
+            const t2 = performance.now();
+            tickTimes.push(t2 - t1);
         }
-        universe.render();
 
+        // 3. Render (z pomiarem)
+        const r1 = performance.now();
+        universe.render();
         const pixelsPtr = universe.pixels_ptr();
         const pixels = new Uint8ClampedArray(
             wasm.memory.buffer,
@@ -152,14 +166,25 @@ async function run() {
             width * height * 4
         );
         const imageData = new ImageData(pixels, width, height);
-
         ctx.putImageData(imageData, 0, 0);
         ctx.drawImage(canvas, 0, 0, width, height, 0, 0, width * scale, height * scale);
+        const r2 = performance.now();
+        renderTimes.push(r2 - r1);
+
+        // 4. Co 60 klatek wyświetl średnie
+        if (tickTimes.length >= 60) {
+            const avgTick = tickTimes.reduce((a, b) => a + b, 0) / tickTimes.length;
+            const avgRender = renderTimes.reduce((a, b) => a + b, 0) / renderTimes.length;
+            document.getElementById('fps').textContent =
+                `tick: ${avgTick.toFixed(2)}ms | render: ${avgRender.toFixed(2)}ms`;
+            tickTimes = [];
+            renderTimes = [];
+        }
 
         requestAnimationFrame(gameLoop);
     }
 
-    gameLoop(); 
+    gameLoop();
 }
 
    
