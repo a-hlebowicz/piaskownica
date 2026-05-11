@@ -8,7 +8,7 @@ async function run() {
     const height = 150;
     const scale = 4;  // każdy piksel symulacji = 4x4 piksele ekranu
 
-    let lastTime = performance.now();
+    //let lastTime = performance.now();
     let frames = 0;
     let fps = 0;
 
@@ -133,11 +133,25 @@ async function run() {
         showMessage('Wyczyszczono', 'success');
     });
 
+    const PHYSICS_HZ = 140;
+    const PHYSICS_DT_MS = 1000 / PHYSICS_HZ;  // 16.67ms
+    let accumulator = 0;
+    let lastTime = performance.now();
     let tickTimes = [];
     let renderTimes = [];
 
     function gameLoop() {
-        // 1. Input (rysowanie myszą)
+        const now = performance.now();
+        let elapsed = now - lastTime;
+        lastTime = now;
+
+        // zabezpieczenie przed "spiral of death":
+        // jeśli karta przegrzała się i lecimy 5 sekund, nie próbuj nadrobić 300 tików
+        if (elapsed > 250) elapsed = 250;
+
+        accumulator += elapsed;
+
+        // 1. Input
         if (mouseDown) {
             if (lastDrawX === -1) {
                 universe.draw(lastX, lastY, currentMaterial);
@@ -148,30 +162,31 @@ async function run() {
             lastDrawY = lastY;
         }
 
-        // 2. Symulacja (z pomiarem)
+        // 2. Fizyka: tyle tików ile trzeba żeby nadrobić, ale stałe DT
         if (!paused) {
-            const t1 = performance.now();
-            universe.tick();
-            const t2 = performance.now();
-            tickTimes.push(t2 - t1);
+            while (accumulator >= PHYSICS_DT_MS) {
+                const t1 = performance.now();
+                universe.tick();
+                const t2 = performance.now();
+                tickTimes.push(t2 - t1);
+                accumulator -= PHYSICS_DT_MS;
+            }
+        } else {
+            accumulator = 0;  // reset gdy pauza, żeby po wyjściu nie nadrabiać
         }
 
-        // 3. Render (z pomiarem)
+        // 3. Render (zawsze raz na klatkę monitora)
         const r1 = performance.now();
         universe.render();
         const pixelsPtr = universe.pixels_ptr();
-        const pixels = new Uint8ClampedArray(
-            wasm.memory.buffer,
-            pixelsPtr,
-            width * height * 4
-        );
+        const pixels = new Uint8ClampedArray(wasm.memory.buffer, pixelsPtr, width * height * 4);
         const imageData = new ImageData(pixels, width, height);
         ctx.putImageData(imageData, 0, 0);
         ctx.drawImage(canvas, 0, 0, width, height, 0, 0, width * scale, height * scale);
         const r2 = performance.now();
         renderTimes.push(r2 - r1);
 
-        // 4. Co 60 klatek wyświetl średnie
+        // 4. Pomiar
         if (tickTimes.length >= 60) {
             const avgTick = tickTimes.reduce((a, b) => a + b, 0) / tickTimes.length;
             const avgRender = renderTimes.reduce((a, b) => a + b, 0) / renderTimes.length;
