@@ -129,7 +129,20 @@ async function run() {
         showMessage('Wyczyszczono', 'success');
     });
 
+    const PHYSICS_HZ = 130;
+    const PHYSICS_DT_MS = 1000 / PHYSICS_HZ;  // 16.67ms
+    let accumulator = 0;
+    let lastTime = performance.now();
+    let tickTimes = [];
+    let renderTimes = [];
+
     function gameLoop() {
+        const now = performance.now();
+        let elapsed = now - lastTime;
+        lastTime = now;
+
+        if (elapsed > 250) elapsed = 250;
+        accumulator += elapsed;
         if (mouseDown) {
             if (lastDrawX === -1) {
                 universe.draw(lastX, lastY, currentMaterial);
@@ -139,27 +152,32 @@ async function run() {
             lastDrawX = lastX;
             lastDrawY = lastY;
         }
-
         if (!paused) {
-            universe.tick();
+            while (accumulator >= PHYSICS_DT_MS) {
+                const t1 = performance.now();
+                universe.tick();
+                const t2 = performance.now();
+                tickTimes.push(t2 - t1);
+                accumulator -= PHYSICS_DT_MS;
+            }
+        } else {
+            accumulator = 0; 
         }
+
+        const r1 = performance.now();
         universe.render();
-
         const pixelsPtr = universe.pixels_ptr();
-        const pixels = new Uint8ClampedArray(
-            wasm.memory.buffer,
-            pixelsPtr,
-            width * height * 4
-        );
+        const pixels = new Uint8ClampedArray(wasm.memory.buffer, pixelsPtr, width * height * 4);
         const imageData = new ImageData(pixels, width, height);
-
         ctx.putImageData(imageData, 0, 0);
         ctx.drawImage(canvas, 0, 0, width, height, 0, 0, width * scale, height * scale);
+        const r2 = performance.now();
+        renderTimes.push(r2 - r1);
 
         requestAnimationFrame(gameLoop);
     }
 
-    gameLoop(); 
+    gameLoop();
 }
 
    
