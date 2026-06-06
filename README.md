@@ -12,17 +12,17 @@ Each cell is a particle with a type (sand, water, fire, etc.) and temperature. P
 ## materials
  
 - `Empty` - air, thermally insulates (does not exchange heat)
-- `Piasek` - falls, sinks in water and lava
-- `Woda` - falls and spreads; evaporates above 110°C, freezes below -10°C
-- `Kamień` - immovable, non-flammable
-- `Drewno` - immovable, ignites above 50°C
-- `Ogień` - rises chaotically, cools passively, extinguishes below 300°C
-- `Lód` - immovable, melts above 10°C
-- `Lawa` - flows like water, freezes into stone below 800°C
-- `Para` - rises, condenses into water below 90°C
+- `Sand` - falls, sinks in water and lava
+- `Water` - falls and spreads; evaporates above 110°C, freezes below -10°C
+- `Stone` - immovable, non-flammable
+- `Wood` - immovable, ignites above 50°C
+- `Fire` - rises chaotically, cools passively, extinguishes below 300°C
+- `Ice` - immovable, melts above 10°C
+- `Lava` - flows like water, freezes into stone below 800°C
+- `Steam` - rises, condenses into water below 90°C
 - `Metal` - immovable, conducts heat great; glows red when hot
-- `Olej` - lighter than water, flammable
-- `Zimno` - cold counterpart of fire
+- `Oil` - lighter than water, flammable
+- `Cold` - cold counterpart of fire
 
 Each material has a temperature (`i16`, °C) and `conductivity` (how willingly it exchanges heat).
  
